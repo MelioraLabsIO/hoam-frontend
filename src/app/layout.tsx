@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
     const { children } = props
     return (
-        <html lang="en">
+        <html lang="en" className={roboto.variable}>
         <body className={roboto.variable}>
         <AppRouterCacheProvider>
             <ThemeProvider theme={theme}>{children}</ThemeProvider>
