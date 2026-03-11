@@ -109,9 +109,38 @@ const Sidebar = ({ children }: { children: ReactNode }) => {
                     bottom: 16,
                     width: "100%",
                     display: "flex",
-                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 1,
                 }}>
                     <Avatar sx={{ bgcolor: "#FF6B35", width: 36, height: 36 }}>?</Avatar>
+                    {open && (
+                        <Typography
+                            variant="caption"
+                            sx={{
+                                color: "rgba(255,255,255,0.5)",
+                                fontSize: "0.7rem",
+                                textAlign: "center",
+                                px: 2,
+                            }}
+                        >
+                            Powered by{" "}
+                            <Box
+                                component="a"
+                                href="https://melioralabs.io"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                    color: "inherit",
+                                    textDecoration: "none",
+                                    fontWeight: "bold",
+                                    "&:hover": { textDecoration: "underline" },
+                                }}
+                            >
+                                Meliora Labs
+                            </Box>
+                        </Typography>
+                    )}
                 </Box>
             </CustomizedDrawer>
 
