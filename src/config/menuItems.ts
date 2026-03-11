@@ -3,7 +3,7 @@ import HomeIcon from "@mui/icons-material/Home"
 import House from "@mui/icons-material/House"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { OverridableComponent } from "@mui/material/OverridableComponent"
-import { SvgIconTypeMap } from "@mui/material/SvgIcon/SvgIcon"
+import { SvgIconTypeMap } from "@mui/material"
 import { Section } from "@/types/common"
 
 type MenuItem = {
