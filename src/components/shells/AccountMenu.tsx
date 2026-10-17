@@ -1,8 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { LogoutIcon, UsersIcon } from "@/components/icons"
-import { signOut } from "@/lib/supabase/actions"
+import { LogoutIcon } from "@/components/icons"
+import { signOut } from "@/lib/auth/actions"
 
 export default function AccountMenu({
     initials,
@@ -25,9 +24,6 @@ export default function AccountMenu({
                     </span>
                     <span className="text-sm muted">{detail}</span>
                 </div>
-                <Link href="/" className="account-item">
-                    <UsersIcon size={18} /> Switch portal
-                </Link>
                 <form action={signOut}>
                     <button type="submit" className="account-item">
                         <LogoutIcon size={18} /> Sign out

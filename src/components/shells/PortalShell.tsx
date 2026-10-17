@@ -6,6 +6,7 @@ import type { ReactNode } from "react"
 import { ChevronDown } from "@/components/icons"
 import { BrandMark, Pill } from "@/components/ui"
 import AccountMenu from "./AccountMenu"
+import type { ShellUser } from "@/lib/auth/session"
 import "./shells.css"
 
 type NavItem = { href: string; label: string; count?: number }
@@ -15,11 +16,6 @@ const PORTALS = {
         label: "Owner",
         tone: "blue" as const,
         home: "/owner",
-        user: {
-            initials: "DO",
-            name: "Dana Ortega",
-            detail: "Owner · 2 homes",
-        },
         nav: [
             { href: "/owner", label: "Home" },
             { href: "/owner/dues", label: "Dues" },
@@ -34,11 +30,6 @@ const PORTALS = {
         label: "Tenant",
         tone: "teal" as const,
         home: "/tenant",
-        user: {
-            initials: "JL",
-            name: "Jordan Lee",
-            detail: "Tenant · 9 Heron Way",
-        },
         nav: [
             { href: "/tenant", label: "Home" },
             { href: "/tenant/maintenance", label: "Maintenance" },
@@ -51,9 +42,11 @@ const PORTALS = {
 
 export default function PortalShell({
     portal,
+    user,
     children,
 }: {
     portal: keyof typeof PORTALS
+    user: ShellUser
     children: ReactNode
 }) {
     const pathname = usePathname()
@@ -96,7 +89,7 @@ export default function PortalShell({
                                     9 Heron Way
                                 </span>
                             )}
-                            <AccountMenu {...cfg.user} />
+                            <AccountMenu {...user} />
                         </div>
                     </div>
                     <nav aria-label={cfg.label} className="portal-nav">

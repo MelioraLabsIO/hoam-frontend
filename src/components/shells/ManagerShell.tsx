@@ -3,9 +3,10 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, type ReactNode } from "react"
-import { LogoutIcon, MenuIcon, UsersIcon, XIcon } from "@/components/icons"
+import { LogoutIcon, MenuIcon, XIcon } from "@/components/icons"
 import { BrandMark } from "@/components/ui"
-import { signOut } from "@/lib/supabase/actions"
+import { signOut } from "@/lib/auth/actions"
+import type { ShellUser } from "@/lib/auth/session"
 import "./shells.css"
 
 const NAV = [
@@ -19,7 +20,13 @@ const NAV = [
     { href: "/manager/documents", label: "Documents" },
 ]
 
-export default function ManagerShell({ children }: { children: ReactNode }) {
+export default function ManagerShell({
+    user,
+    children,
+}: {
+    user: ShellUser
+    children: ReactNode
+}) {
     const pathname = usePathname()
     const [open, setOpen] = useState(false)
 
@@ -68,11 +75,17 @@ export default function ManagerShell({ children }: { children: ReactNode }) {
                     ))}
                 </nav>
                 <div className="mgr-foot">
-                    <Link href="/" className="mgr-link">
-                        <span className="row" style={{ gap: 10 }}>
-                            <UsersIcon size={18} /> Switch portal
+                    <div className="mgr-user">
+                        <span className="avatar avatar-soft">
+                            {user.initials}
                         </span>
-                    </Link>
+                        <span className="stack" style={{ gap: 0, minWidth: 0 }}>
+                            <span className="mgr-user-name">{user.name}</span>
+                            <span className="mgr-user-email">
+                                {user.detail}
+                            </span>
+                        </span>
+                    </div>
                     <form action={signOut}>
                         <button
                             type="submit"

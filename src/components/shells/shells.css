@@ -279,3 +279,25 @@
 .split-side > * {
     min-width: 0;
 }
+
+.mgr-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px 10px;
+    min-width: 0;
+}
+
+.mgr-user-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mgr-user-email {
+    color: var(--nav-sub);
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

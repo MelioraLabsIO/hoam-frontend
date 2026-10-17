@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server"
+import { isSupabaseConfigured, safeNext } from "@/lib/auth/config"
 import { createClient } from "@/lib/supabase/server"
 
-// Supabase redirects here after a magic link or OAuth sign-in.
+// Supabase email links (password reset, invites) land here, then continue to `next`.
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get("code")
-    const next = searchParams.get("next") ?? "/"
+    const next = safeNext(searchParams.get("next"), "/")
 
-    if (code) {
+    if (code && isSupabaseConfigured) {
         const supabase = await createClient()
         await supabase.auth.exchangeCodeForSession(code)
     }
 
-    return NextResponse.redirect(
-        new URL(next.startsWith("/") ? next : "/", origin)
-    )
+    return NextResponse.redirect(new URL(next, origin))
 }
