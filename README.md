@@ -18,7 +18,7 @@ Screens use placeholder data until the Supabase tables exist.
 
 Auth uses the Supabase SDK (`@supabase/ssr`). The code is in `src/lib/auth/`, the screens in `src/app/auth/`, and route protection in `src/proxy.ts`.
 
-**Demo mode.** Until `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set, any email and password signs in, and the session is kept in a plain, unsigned cookie. The email picks the portal:
+**Demo mode (the default).** Any email and password signs in, even if Supabase keys are present, and the session is kept in a plain, unsigned cookie. The email picks the portal:
 
 | Email contains | Portal |
 |---|---|
@@ -28,7 +28,7 @@ Auth uses the Supabase SDK (`@supabase/ssr`). The code is in `src/lib/auth/`, th
 
 Demo mode is for building the UI only. Never deploy it to real users.
 
-**Connecting Supabase.** Add the two variables to `.env.local` (and to Vercel), then in the Supabase dashboard:
+**Switching on Supabase.** Set `NEXT_PUBLIC_AUTH_PROVIDER=supabase` along with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local` (and in Vercel, then redeploy). In the Supabase dashboard:
 
 1. Enable Email sign-in, and add `<your site>/auth/callback` to the allowed redirect URLs (password reset links land there).
 2. Enable MFA: TOTP, plus Phone if you want text-message codes, and recovery codes for the backup-codes screen.
@@ -55,7 +55,7 @@ Not wired yet: the "Don't ask again on this device for 30 days" checkbox, and th
 ## Getting started
 
 ```bash
-cp .env.example .env.local   # leave empty for demo mode, or add your Supabase URL and anon key
+cp .env.example .env.local   # demo mode by default; see Authentication to switch on Supabase
 npm install
 npm run dev
 ```

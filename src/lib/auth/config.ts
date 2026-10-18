@@ -1,26 +1,20 @@
 /*
  * Auth configuration shared by the proxy, server code and client components.
  *
- * When NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set, every auth call goes
- * through the Supabase SDK. Until then the app runs in DEMO MODE: any email and password signs in,
- * and the session lives in a plain cookie. Demo mode is for building the UI only.
+ * The app runs in DEMO MODE by default: any email and password signs in, and the session lives in a
+ * plain cookie. Supabase is only used when it is switched on explicitly with
+ * NEXT_PUBLIC_AUTH_PROVIDER=supabase, plus NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.
+ * Having the Supabase keys set (for example by a Vercel integration) does not turn it on by itself.
  */
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
 
-/** True only for real-looking values, so the placeholders from .env.example keep demo mode on. */
-function looksReal(url: string, key: string) {
-    if (!url || !key || /your-project|your-anon-key/i.test(url + key))
-        return false
-    try {
-        return new URL(url).protocol.startsWith("http")
-    } catch {
-        return false
-    }
-}
+const supabaseRequested =
+    process.env.NEXT_PUBLIC_AUTH_PROVIDER?.trim().toLowerCase() === "supabase"
 
-export const isSupabaseConfigured = looksReal(SUPABASE_URL, SUPABASE_ANON_KEY)
+export const isSupabaseConfigured =
+    supabaseRequested && Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
 export const isDemoMode = !isSupabaseConfigured
 
 export type Role = "manager" | "owner" | "tenant"
