@@ -1,5 +1,11 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
 
 // Placeholder data until the Supabase tables exist.
@@ -38,145 +44,182 @@ export default function BookingPicker() {
         : "Pick an open time"
 
     return (
-        <section
-            className="card split-main"
-            style={{ padding: 22, gap: 20, flexBasis: 560 }}
+        <Card
+            component="section"
             aria-label="New booking"
+            sx={{ p: 2.75, gap: 2.5 }}
         >
-            <div
+            <Box
                 role="group"
                 aria-label="Amenity"
-                style={{
+                sx={(theme) => ({
                     display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(150px, 100%), 1fr))",
-                    gap: 10,
-                }}
+                    gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(18.75)}, 100%), 1fr))`,
+                    gap: 1.25,
+                })}
             >
                 {AMENITIES.map((a) => {
                     const sel = a.id === amenity
+                    const bg = a.closed
+                        ? "neutral.soft"
+                        : sel
+                          ? "primary.main"
+                          : "background.paper"
+                    const fg = a.closed
+                        ? "text.secondary"
+                        : sel
+                          ? "primary.contrastText"
+                          : "text.primary"
+                    const border = sel ? "primary.main" : "border.main"
                     return (
-                        <button
+                        <Button
                             key={a.id}
-                            type="button"
                             disabled={a.closed}
                             aria-pressed={sel}
                             onClick={() => {
                                 setAmenity(a.id)
                                 setReserved(null)
                             }}
-                            className="stack"
-                            style={{
-                                minHeight: 64,
-                                padding: "12px 14px",
-                                borderRadius: 14,
-                                border: `1px solid ${sel ? "var(--primary)" : "var(--border)"}`,
-                                background: a.closed
-                                    ? "var(--gray-bg)"
-                                    : sel
-                                      ? "var(--primary)"
-                                      : "var(--surface)",
-                                color: a.closed
-                                    ? "#5e6a7b"
-                                    : sel
-                                      ? "#fff"
-                                      : "var(--ink)",
+                            sx={(theme) => ({
+                                minHeight: theme.spacing(8),
+                                py: 1.5,
+                                px: 1.75,
+                                borderRadius: `${theme.radius.lg}px`,
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                justifyContent: "center",
                                 textAlign: "left",
-                                gap: 3,
-                                cursor: a.closed ? "not-allowed" : "pointer",
-                            }}
+                                whiteSpace: "normal",
+                                gap: 0.375,
+                                bgcolor: bg,
+                                color: fg,
+                                borderColor: border,
+                                "&:hover": { bgcolor: bg, color: fg },
+                                "&.Mui-disabled": {
+                                    opacity: 1,
+                                    bgcolor: bg,
+                                    color: fg,
+                                    borderColor: border,
+                                },
+                            })}
                         >
-                            <span className="strong" style={{ fontSize: 16 }}>
+                            <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
+                            >
                                 {a.name}
-                            </span>
-                            <span className="text-sm" style={{ opacity: 0.85 }}>
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{ opacity: 0.85 }}
+                            >
                                 {a.note}
-                            </span>
-                        </button>
+                            </Typography>
+                        </Button>
                     )
                 })}
-            </div>
+            </Box>
 
-            <div className="stack" style={{ gap: 10 }}>
-                <h2 className="bold" style={{ fontSize: 16 }}>
+            <Stack sx={{ gap: 1.25 }}>
+                <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ fontWeight: "fontWeightBold" }}
+                >
                     October
-                </h2>
-                <div
-                    style={{
+                </Typography>
+                <Box
+                    sx={{
                         display: "grid",
                         gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                        gap: 8,
+                        gap: 1,
                     }}
                 >
                     {DAYS.map((d) => {
                         const sel = d.num === day
                         return (
-                            <button
+                            <Button
                                 key={d.num}
-                                type="button"
                                 aria-pressed={sel}
                                 aria-label={`${d.dow} October ${d.num}`}
                                 onClick={() => {
                                     setDay(d.num)
                                     setReserved(null)
                                 }}
-                                style={{
-                                    height: 62,
-                                    borderRadius: 12,
-                                    border: `1px solid ${sel ? "var(--nav-bg)" : "var(--border)"}`,
-                                    background: sel
-                                        ? "var(--nav-bg)"
-                                        : "var(--surface)",
-                                    color: sel ? "#fff" : "var(--ink)",
-                                    display: "flex",
+                                sx={(theme) => ({
+                                    minHeight: theme.spacing(7.75),
+                                    minWidth: 0,
+                                    p: 0,
+                                    borderRadius: `${theme.radius.md}px`,
                                     flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: 2,
-                                    padding: 0,
-                                    cursor: "pointer",
-                                }}
+                                    gap: 0.25,
+                                    borderColor: sel
+                                        ? "nav.main"
+                                        : "border.main",
+                                    bgcolor: sel
+                                        ? "nav.main"
+                                        : "background.paper",
+                                    color: sel
+                                        ? "nav.contrastText"
+                                        : "text.primary",
+                                    "&:hover": {
+                                        bgcolor: sel
+                                            ? "nav.main"
+                                            : "background.paper",
+                                        borderColor: sel
+                                            ? "nav.main"
+                                            : "border.strong",
+                                    },
+                                })}
                             >
-                                <span
-                                    style={{
-                                        fontSize: 12,
-                                        fontWeight: 600,
-                                        opacity: 0.85,
-                                    }}
+                                <Typography
+                                    variant="micro"
+                                    sx={{ opacity: 0.85 }}
                                 >
                                     {d.dow}
-                                </span>
-                                <span
-                                    className="display"
-                                    style={{ fontSize: 18 }}
-                                >
+                                </Typography>
+                                <Typography variant="dateDay">
                                     {d.num}
-                                </span>
-                            </button>
+                                </Typography>
+                            </Button>
                         )
                     })}
-                </div>
-            </div>
+                </Box>
+            </Stack>
 
-            <div className="stack" style={{ gap: 10 }}>
-                <h2 className="bold" style={{ fontSize: 16 }}>
+            <Stack sx={{ gap: 1.25 }}>
+                <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ fontWeight: "fontWeightBold" }}
+                >
                     Available times · 2-hour blocks
-                </h2>
-                <div
-                    style={{
+                </Typography>
+                <Box
+                    sx={(theme) => ({
                         display: "grid",
-                        gridTemplateColumns:
-                            "repeat(auto-fit, minmax(min(110px, 100%), 1fr))",
-                        gap: 8,
-                    }}
+                        gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(13.75)}, 100%), 1fr))`,
+                        gap: 1,
+                    })}
                 >
                     {TIMES.map((time, i) => {
                         const isBooked = booked.includes(i)
                         const sel = time === slot && !isBooked
+                        const bg = isBooked
+                            ? "neutral.soft"
+                            : sel
+                              ? "primary.soft"
+                              : "background.paper"
+                        const fg = isBooked
+                            ? "text.faint"
+                            : sel
+                              ? "primary.softContrast"
+                              : "text.primary"
+                        const border = sel ? "primary.main" : "border.main"
                         return (
-                            <button
+                            <Button
                                 key={time}
-                                type="button"
                                 disabled={isBooked}
                                 aria-pressed={sel}
                                 aria-label={isBooked ? `${time}, booked` : time}
@@ -184,71 +227,85 @@ export default function BookingPicker() {
                                     setSlot(time)
                                     setReserved(null)
                                 }}
-                                style={{
-                                    height: 48,
-                                    borderRadius: 12,
-                                    border: sel
-                                        ? "2px solid var(--primary)"
-                                        : "1px solid var(--border)",
-                                    background: isBooked
-                                        ? "var(--gray-bg)"
-                                        : sel
-                                          ? "var(--primary-soft)"
-                                          : "var(--surface)",
-                                    color: isBooked
-                                        ? "var(--faint)"
-                                        : sel
-                                          ? "var(--primary-ink)"
-                                          : "var(--ink)",
-                                    fontSize: 15,
-                                    fontWeight: 600,
+                                sx={(theme) => ({
+                                    minHeight: theme.layout.control.lg,
+                                    minWidth: 0,
+                                    px: 1,
+                                    borderRadius: `${theme.radius.md}px`,
+                                    border: sel ? 2 : 1,
+                                    borderColor: border,
+                                    bgcolor: bg,
+                                    color: fg,
                                     textDecoration: isBooked
                                         ? "line-through"
                                         : "none",
-                                    cursor: isBooked
-                                        ? "not-allowed"
-                                        : "pointer",
-                                }}
+                                    "&:hover": {
+                                        bgcolor: bg,
+                                        borderColor: sel
+                                            ? "primary.main"
+                                            : "border.strong",
+                                    },
+                                    "&.Mui-disabled": {
+                                        opacity: 1,
+                                        bgcolor: bg,
+                                        color: fg,
+                                        borderColor: border,
+                                    },
+                                })}
                             >
                                 {time}
-                            </button>
+                            </Button>
                         )
                     })}
-                </div>
-            </div>
+                </Box>
+            </Stack>
 
-            <div
-                className="row-wrap"
-                style={{
+            <Stack
+                direction="row"
+                sx={{
+                    flexWrap: "wrap",
+                    alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 12,
-                    paddingTop: 16,
-                    borderTop: "1px solid var(--divider)",
+                    gap: 1.5,
+                    pt: 2,
+                    borderTop: 1,
+                    borderColor: "divider",
                 }}
             >
-                <div className="stack" style={{ gap: 2 }} aria-live="polite">
-                    <span className="text-lg strong">{am.name}</span>
-                    <span className="text-md muted">{summary}</span>
-                </div>
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    style={{ height: 48, padding: "0 24px", fontSize: 16 }}
+                <Stack sx={{ gap: 0.25 }} aria-live="polite">
+                    <Typography variant="h6" component="span">
+                        {am.name}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        component="span"
+                        color="text.secondary"
+                    >
+                        {summary}
+                    </Typography>
+                </Stack>
+                <Button
+                    variant="contained"
                     disabled={!slotOk}
                     onClick={() =>
                         setReserved(
                             `${am.name} · ${summary} is held for you once bookings are connected.`
                         )
                     }
+                    sx={(theme) => ({
+                        minHeight: theme.layout.control.lg,
+                        px: 3,
+                        fontSize: theme.typography.subtitle1.fontSize,
+                    })}
                 >
                     Reserve
-                </button>
-            </div>
+                </Button>
+            </Stack>
             {reserved && (
-                <p className="callout callout-info" role="status">
+                <Alert severity="info" role="status">
                     {reserved}
-                </p>
+                </Alert>
             )}
-        </section>
+        </Card>
     )
 }

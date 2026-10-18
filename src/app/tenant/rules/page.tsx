@@ -1,5 +1,10 @@
 import type { Metadata } from "next"
-import { PageHeader } from "@/components/ui"
+import Card from "@mui/material/Card"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
+import { AutoGrid, ListRow, PageHeader } from "@/components/ui"
+import PdfBadge from "./PdfBadge"
 
 export const metadata: Metadata = { title: "Community rules" }
 
@@ -38,74 +43,58 @@ export default function TenantRules() {
                 description="The rules that apply to everyone who lives here. A quick summary, with the full versions below."
             />
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-                    gap: 16,
-                }}
-            >
+            <AutoGrid kind="stats">
                 {SUMMARIES.map((s) => (
-                    <section
+                    <Card
                         key={s.title}
-                        className="card"
-                        style={{ padding: 18, gap: 8 }}
+                        component="section"
+                        sx={{ p: 2.25, gap: 1 }}
                     >
-                        <h2 className="h3">{s.title}</h2>
-                        <p className="lead" style={{ lineHeight: 1.5 }}>
+                        <Typography variant="h5" component="h2">
+                            {s.title}
+                        </Typography>
+                        <Typography
+                            variant="lead"
+                            color="text.secondary"
+                            sx={{ lineHeight: 1.5 }}
+                        >
                             {s.body}
-                        </p>
-                    </section>
+                        </Typography>
+                    </Card>
                 ))}
-            </div>
+            </AutoGrid>
 
-            <section
-                className="card"
-                style={{ padding: "8px 20px", gap: 0 }}
+            <Card
+                component="section"
                 aria-label="Full rule documents"
+                sx={{ py: 1, px: 2.5, gap: 0 }}
             >
                 {DOCUMENTS.map((d) => (
-                    <div
-                        key={d.name}
-                        className="list-row"
-                        style={{ padding: "14px 0" }}
-                    >
-                        <span
-                            aria-hidden="true"
-                            style={{
-                                width: 34,
-                                height: 40,
-                                flex: "0 0 auto",
-                                borderRadius: 6,
-                                background: "var(--gray-bg)",
-                                color: "var(--gray-fg)",
-                                fontSize: 10,
-                                fontWeight: 700,
-                                display: "flex",
-                                alignItems: "flex-end",
-                                justifyContent: "center",
-                                paddingBottom: 6,
-                            }}
-                        >
-                            PDF
-                        </span>
-                        <div className="stack grow" style={{ gap: 2 }}>
-                            <span className="strong">{d.name}</span>
-                            <span className="text-sm muted">
+                    <ListRow key={d.name} sx={{ py: 1.75 }}>
+                        <PdfBadge />
+                        <Stack sx={{ flex: "1 1 auto", minWidth: 0, gap: 0.25 }}>
+                            <Typography
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
+                            >
+                                {d.name}
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
                                 Updated {d.updated}
-                            </span>
-                        </div>
-                        <a
+                            </Typography>
+                        </Stack>
+                        <Link
                             href={d.href}
-                            className="link-strong"
+                            variant="label"
                             aria-label={`Download ${d.name} (PDF)`}
                         >
                             Download
-                        </a>
-                    </div>
+                        </Link>
+                    </ListRow>
                 ))}
-            </section>
+            </Card>
         </>
     )
 }

@@ -1,25 +1,28 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import {
+    AutoGrid,
+    ListRow,
     PageHeader,
-    Pill,
     SectionHeader,
     StatCard,
     TextLink,
-    type Tone,
 } from "@/components/ui"
+import {
+    BookingsThisWeek,
+    RequestQueue,
+    type QueueRequest,
+    type WeekBooking,
+} from "./OverviewSections"
 import QuickAnnouncement from "./QuickAnnouncement"
 
 export const metadata: Metadata = { title: "Overview" }
 
 // Placeholder data until the Supabase tables exist.
-const REQUESTS: {
-    title: string
-    home: string
-    status: string
-    tone: Tone
-    age: string
-}[] = [
+const REQUESTS: QueueRequest[] = [
     {
         title: "Fence replacement — cedar",
         home: "14 Willow Bend",
@@ -73,7 +76,7 @@ const PAST_DUE = [
     },
 ]
 
-const BOOKINGS = [
+const BOOKINGS: WeekBooking[] = [
     {
         dow: "FRI",
         day: 16,
@@ -105,20 +108,15 @@ export default function ManagerOverview() {
                 title="Overview"
                 actions={
                     <>
-                        <button type="button" className="btn">
-                            Export report
-                        </button>
-                        <Link
-                            href="/manager/announcements"
-                            className="btn btn-primary"
-                        >
+                        <Button>Export report</Button>
+                        <Button variant="contained" href="/manager/announcements">
                             New announcement
-                        </Link>
+                        </Button>
                     </>
                 }
             />
 
-            <div className="grid-stats">
+            <AutoGrid kind="stats">
                 <StatCard
                     label="Q4 dues collected"
                     value="62%"
@@ -141,47 +139,12 @@ export default function ManagerOverview() {
                     value="5"
                     note="2 past their resolve-by date"
                 />
-            </div>
+            </AutoGrid>
 
-            <div className="grid-wide">
-                <section className="card">
-                    <SectionHeader
-                        title="Request queue"
-                        action={
-                            <TextLink href="/manager/requests">
-                                View all
-                            </TextLink>
-                        }
-                    />
-                    <div className="table-wrap">
-                        <table className="table" style={{ minWidth: 440 }}>
-                            <thead>
-                                <tr>
-                                    <th>Request</th>
-                                    <th>Home</th>
-                                    <th>Status</th>
-                                    <th>Age</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {REQUESTS.map((r) => (
-                                    <tr key={r.title}>
-                                        <td className="strong">{r.title}</td>
-                                        <td className="muted">{r.home}</td>
-                                        <td>
-                                            <Pill tone={r.tone}>
-                                                {r.status}
-                                            </Pill>
-                                        </td>
-                                        <td className="muted">{r.age}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+            <AutoGrid kind="wide">
+                <RequestQueue requests={REQUESTS} />
 
-                <section className="card">
+                <Card component="section">
                     <SectionHeader
                         title="Past-due accounts"
                         action={
@@ -190,82 +153,44 @@ export default function ManagerOverview() {
                             </TextLink>
                         }
                     />
-                    <div className="stack" style={{ gap: 0 }}>
+                    <Stack>
                         {PAST_DUE.map((a) => (
-                            <div className="list-row" key={a.home}>
-                                <div className="stack grow" style={{ gap: 2 }}>
-                                    <span className="strong">{a.home}</span>
-                                    <span className="text-sm muted">
-                                        {a.detail}
-                                    </span>
-                                </div>
-                                <span className="amount-due">{a.amount}</span>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                <section className="card">
-                    <SectionHeader
-                        title="Bookings this week"
-                        action={
-                            <TextLink href="/manager/amenities">
-                                Calendar
-                            </TextLink>
-                        }
-                    />
-                    <div className="stack" style={{ gap: 10 }}>
-                        {BOOKINGS.map((b) => (
-                            <div
-                                className="row"
-                                style={{ gap: 14 }}
-                                key={b.title + b.day}
-                            >
-                                <div
-                                    className="stack"
-                                    style={{
-                                        width: 52,
-                                        gap: 0,
-                                        textAlign: "center",
-                                        flex: "0 0 auto",
+                            <ListRow key={a.home}>
+                                <Stack
+                                    sx={{
+                                        flex: "1 1 auto",
+                                        minWidth: 0,
+                                        gap: 0.25,
                                     }}
                                 >
-                                    <span className="text-sm bold muted">
-                                        {b.dow}
-                                    </span>
-                                    <span
-                                        className="display"
-                                        style={{ fontSize: 20 }}
+                                    <Typography
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
                                     >
-                                        {b.day}
-                                    </span>
-                                </div>
-                                <div
-                                    className={`block block-${b.tone} grow`}
-                                    style={{
-                                        padding: "10px 14px",
-                                        borderRadius: 12,
-                                    }}
+                                        {a.home}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        {a.detail}
+                                    </Typography>
+                                </Stack>
+                                <Typography
+                                    component="span"
+                                    color="amber.dark"
+                                    sx={{ fontWeight: "fontWeightBold" }}
                                 >
-                                    <div className="spread">
-                                        <span
-                                            className="strong"
-                                            style={{ fontSize: 15 }}
-                                        >
-                                            {b.title}
-                                        </span>
-                                        <span className="text-md">
-                                            {b.detail}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                                    {a.amount}
+                                </Typography>
+                            </ListRow>
                         ))}
-                    </div>
-                </section>
+                    </Stack>
+                </Card>
+
+                <BookingsThisWeek bookings={BOOKINGS} />
 
                 <QuickAnnouncement />
-            </div>
+            </AutoGrid>
         </>
     )
 }

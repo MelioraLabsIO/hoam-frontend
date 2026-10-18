@@ -1,8 +1,17 @@
 "use client"
 
-import Link from "next/link"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import List from "@mui/material/List"
+import ListItem from "@mui/material/ListItem"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
+import type { Theme } from "@mui/material/styles"
 import { useState } from "react"
-import { AuthHeader, COMMUNITY } from "@/components/auth/AuthLayout"
+import { AuthHeader, AuthNote, COMMUNITY } from "@/components/auth/AuthLayout"
+import { CheckIcon } from "@/components/icons"
 
 export default function BackupCodes({
     codes,
@@ -37,102 +46,113 @@ export default function BackupCodes({
         }
     }
 
+    const flexButton = (t: Theme) => ({ flex: 1, minWidth: t.spacing(15) })
+
     return (
         <>
-            <div
-                className="row auth-print-hide"
-                style={{
-                    gap: 10,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: "var(--primary-ink)",
+            <Typography
+                variant="label"
+                color="primary.softContrast"
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.25,
+                    fontWeight: "fontWeightBold",
+                    displayPrint: "none",
                 }}
             >
-                <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="m5 12 4.5 4.5L19 7" />
-                </svg>
+                <CheckIcon strokeWidth={2.2} />
                 Two-factor authentication is on
-            </div>
+            </Typography>
             <AuthHeader title="Save your backup codes">
                 If you lose your phone, each of these codes lets you sign in
                 once. Keep them somewhere safe, like a password manager. We
                 won&apos;t show them again.
             </AuthHeader>
 
-            <ul
+            <List
                 aria-label="Backup codes"
-                className="auth-codes"
-                style={{ margin: 0, listStyle: "none" }}
+                disablePadding
+                sx={(theme) => ({
+                    display: "grid",
+                    gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.layout.grid.codes}px, 100%), 1fr))`,
+                    gap: 1,
+                    p: 2,
+                    borderRadius: `${theme.radius.lg}px`,
+                    bgcolor: "background.default",
+                    border: 1,
+                    borderColor: "border.main",
+                })}
             >
                 {codes.map((c) => (
-                    <li key={c} style={{ display: "contents" }}>
-                        <span>{c}</span>
-                    </li>
+                    <ListItem
+                        key={c}
+                        disablePadding
+                        sx={(theme) => ({
+                            ...theme.typography.mono,
+                            justifyContent: "center",
+                            textAlign: "center",
+                            px: 1.25,
+                            py: 1,
+                            borderRadius: `${theme.radius.xs}px`,
+                            bgcolor: "background.paper",
+                        })}
+                    >
+                        {c}
+                    </ListItem>
                 ))}
-            </ul>
+            </List>
             {demo && (
-                <div className="auth-note auth-print-hide" role="note">
-                    <strong style={{ color: "var(--ink)" }}>Demo mode:</strong>{" "}
-                    these codes are examples and aren&apos;t saved anywhere.
-                </div>
+                <Box sx={{ displayPrint: "none" }}>
+                    <AuthNote>
+                        <strong>Demo mode:</strong> these codes are examples
+                        and aren&apos;t saved anywhere.
+                    </AuthNote>
+                </Box>
             )}
 
-            <div className="row-wrap auth-print-hide" style={{ gap: 10 }}>
-                <button
-                    type="button"
-                    className="btn btn-flex"
-                    onClick={download}
-                >
-                    Download
-                </button>
-                <button type="button" className="btn btn-flex" onClick={copy}>
-                    {copied ? "Copied" : "Copy"}
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-flex"
-                    onClick={() => window.print()}
-                >
-                    Print
-                </button>
-            </div>
-
-            <label
-                className="auth-check auth-print-hide"
-                style={{ minHeight: 44, fontWeight: 600 }}
+            <Stack
+                direction="row"
+                sx={{ flexWrap: "wrap", gap: 1.25, displayPrint: "none" }}
             >
-                <input
-                    type="checkbox"
-                    checked={saved}
-                    onChange={(e) => setSaved(e.target.checked)}
-                    style={{ width: 20, height: 20 }}
-                />
-                I&apos;ve saved my backup codes
-            </label>
+                <Button onClick={download} sx={flexButton}>
+                    Download
+                </Button>
+                <Button onClick={copy} sx={flexButton}>
+                    {copied ? "Copied" : "Copy"}
+                </Button>
+                <Button onClick={() => window.print()} sx={flexButton}>
+                    Print
+                </Button>
+            </Stack>
 
-            {saved ? (
-                <Link href={next} className="auth-btn auth-print-hide">
-                    Continue to {COMMUNITY}
-                </Link>
-            ) : (
-                <button
-                    type="button"
-                    className="auth-btn auth-print-hide"
-                    disabled
-                >
-                    Continue to {COMMUNITY}
-                </button>
-            )}
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        size="medium"
+                        checked={saved}
+                        onChange={(e) => setSaved(e.target.checked)}
+                    />
+                }
+                label="I've saved my backup codes"
+                sx={{
+                    displayPrint: "none",
+                    "& .MuiFormControlLabel-label": {
+                        typography: "body1",
+                        fontWeight: "fontWeightSemiBold",
+                    },
+                }}
+            />
+
+            <Button
+                variant="contained"
+                size="large"
+                href={saved ? next : undefined}
+                disabled={!saved}
+                sx={{ displayPrint: "none" }}
+            >
+                Continue to {COMMUNITY}
+            </Button>
         </>
     )
 }

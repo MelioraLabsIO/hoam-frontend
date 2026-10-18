@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { Bricolage_Grotesque, Figtree } from "next/font/google"
-import "./globals.css"
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript"
+import ThemeRegistry from "@/theme/ThemeRegistry"
 
 const bricolage = Bricolage_Grotesque({
     subsets: ["latin"],
@@ -30,8 +31,15 @@ export default function RootLayout({
     children,
 }: Readonly<{ children: ReactNode }>) {
     return (
-        <html lang="en" className={`${bricolage.variable} ${figtree.variable}`}>
-            <body>{children}</body>
+        <html
+            lang="en"
+            className={`${bricolage.variable} ${figtree.variable}`}
+            suppressHydrationWarning
+        >
+            <body>
+                <InitColorSchemeScript attribute="class" defaultMode="system" />
+                <ThemeRegistry>{children}</ThemeRegistry>
+            </body>
         </html>
     )
 }

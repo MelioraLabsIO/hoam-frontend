@@ -1,13 +1,21 @@
 "use client"
 
-import Link from "next/link"
+import AppBar from "@mui/material/AppBar"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Container from "@mui/material/Container"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Tab from "@mui/material/Tab"
+import Tabs from "@mui/material/Tabs"
+import Typography from "@mui/material/Typography"
 import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 import { ChevronDown } from "@/components/icons"
-import { BrandMark, Pill } from "@/components/ui"
-import AccountMenu from "./AccountMenu"
+import { BrandMark, CountDot, Pill } from "@/components/ui"
 import type { ShellUser } from "@/lib/auth/session"
-import "./shells.css"
+import { accentScope } from "@/theme/accent"
+import AccountMenu from "./AccountMenu"
 
 type NavItem = { href: string; label: string; count?: number }
 
@@ -53,67 +61,131 @@ export default function PortalShell({
     const cfg = PORTALS[portal]
     const isActive = (href: string) =>
         href === cfg.home ? pathname === href : pathname.startsWith(href)
+    const current = cfg.nav.find((item) => isActive(item.href))?.href ?? false
 
     return (
-        <div className={portal === "tenant" ? "portal theme-tenant" : "portal"}>
-            <header className="portal-header">
-                <div className="portal-header-inner">
-                    <div className="portal-top">
-                        <Link href={cfg.home} className="portal-brand">
+        <Box
+            sx={[
+                { minHeight: "100vh", bgcolor: "background.default" },
+                portal === "tenant" ? accentScope("teal") : {},
+            ]}
+        >
+            <AppBar component="header">
+                <Container
+                    maxWidth={false}
+                    sx={(theme) => ({
+                        maxWidth: theme.layout.contentMaxWidth,
+                        px: `${theme.layout.gutter} !important`,
+                        pt: 1.75,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                    })}
+                >
+                    <Stack
+                        direction="row"
+                        sx={{
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 1.5,
+                        }}
+                    >
+                        <Link
+                            href={cfg.home}
+                            color="text.primary"
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1.25,
+                                "&:hover": { color: "text.primary" },
+                            }}
+                        >
                             <BrandMark />
-                            <span className="portal-brand-name">
+                            <Typography variant="brand" component="span">
                                 Willow Creek
-                            </span>
+                            </Typography>
                             <Pill tone={cfg.tone}>
-                                <span className="bold">{cfg.label}</span>
+                                <Box component="span" sx={{ fontWeight: "fontWeightBold" }}>
+                                    {cfg.label}
+                                </Box>
                             </Pill>
                         </Link>
-                        <div className="row" style={{ gap: 10 }}>
+                        <Stack direction="row" sx={{ alignItems: "center", gap: 1.25 }}>
                             {portal === "owner" ? (
-                                <button
-                                    type="button"
-                                    className="btn btn-sm"
+                                <Button
+                                    size="small"
                                     aria-label="Switch home, 14 Willow Bend Ct selected"
+                                    endIcon={<ChevronDown fontSize="xsmall" />}
                                 >
-                                    14 Willow Bend Ct{" "}
-                                    <span
-                                        className="muted"
-                                        style={{ fontWeight: 500 }}
+                                    14 Willow Bend Ct
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ fontWeight: "fontWeightMedium" }}
                                     >
                                         · 2 homes
-                                    </span>
-                                    <ChevronDown size={16} />
-                                </button>
+                                    </Typography>
+                                </Button>
                             ) : (
-                                <span className="text-md strong muted">
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ fontWeight: "fontWeightSemiBold" }}
+                                >
                                     9 Heron Way
-                                </span>
+                                </Typography>
                             )}
                             <AccountMenu {...user} />
-                        </div>
-                    </div>
-                    <nav aria-label={cfg.label} className="portal-nav">
+                        </Stack>
+                    </Stack>
+                    <Tabs
+                        component="nav"
+                        aria-label={cfg.label}
+                        value={current}
+                        variant="scrollable"
+                        scrollButtons={false}
+                    >
                         {cfg.nav.map((item) => (
-                            <Link
+                            <Tab
                                 key={item.href}
+                                value={item.href}
                                 href={item.href}
-                                className="portal-link"
-                                aria-current={
-                                    isActive(item.href) ? "page" : undefined
+                                aria-current={isActive(item.href) ? "page" : undefined}
+                                label={
+                                    <Stack
+                                        component="span"
+                                        direction="row"
+                                        sx={{ alignItems: "center", gap: 0.75 }}
+                                    >
+                                        {item.label}
+                                        {item.count !== undefined && (
+                                            <CountDot count={item.count} />
+                                        )}
+                                    </Stack>
                                 }
-                            >
-                                {item.label}
-                                {item.count !== undefined && (
-                                    <span className="count-dot">
-                                        {item.count}
-                                    </span>
-                                )}
-                            </Link>
+                            />
                         ))}
-                    </nav>
-                </div>
-            </header>
-            <main className="portal-main">{children}</main>
-        </div>
+                    </Tabs>
+                </Container>
+            </AppBar>
+            <Container
+                component="main"
+                maxWidth={false}
+                sx={(theme) => ({
+                    maxWidth: theme.layout.contentMaxWidth,
+                    px: `${theme.layout.gutter} !important`,
+                    pt: 4,
+                    pb: 6,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 3,
+                    "& > *": { minWidth: 0 },
+                })}
+            >
+                {children}
+            </Container>
+        </Box>
     )
 }

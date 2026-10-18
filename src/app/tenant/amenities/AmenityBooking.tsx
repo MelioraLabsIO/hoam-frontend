@@ -1,6 +1,12 @@
 "use client"
 
-import { useState, type CSSProperties } from "react"
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
+import { useState } from "react"
 
 // Placeholder data until the Supabase tables exist.
 const AMENITIES: {
@@ -30,12 +36,21 @@ const BOOKED_BY_DAY: Record<number, number[]> = {
     21: [],
 }
 
-const optionBase: CSSProperties = {
-    border: "1px solid var(--border)",
-    background: "var(--surface)",
-    color: "var(--ink)",
-    cursor: "pointer",
-}
+/** Unselected option: white with the light card border. */
+const optionSx = {
+    minWidth: 0,
+    "&.MuiButton-outlined": { borderColor: "border.main" },
+    "&.MuiButton-outlined:hover": { borderColor: "border.strong" },
+} as const
+
+/** Greyed-out option that can't be picked (closed amenity, booked slot). */
+const unavailableSx = {
+    "&.Mui-disabled": {
+        bgcolor: "neutral.soft",
+        borderColor: "border.main",
+        opacity: 1,
+    },
+} as const
 
 // Reserving isn't wired to Supabase yet; the button confirms locally.
 export default function AmenityBooking() {
@@ -51,139 +66,145 @@ export default function AmenityBooking() {
     const when = `${dayObj.dow}, Oct ${dayObj.num} · ${slot}`
 
     return (
-        <section className="card" style={{ padding: 22, gap: 20 }}>
-            <div
+        <Card component="section" sx={{ p: 2.75, gap: 2.5 }}>
+            <Box
                 role="group"
                 aria-label="Amenity"
-                style={{
+                sx={(theme) => ({
                     display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(180px, 100%), 1fr))",
-                    gap: 10,
-                }}
+                    gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(22.5)}, 100%), 1fr))`,
+                    gap: 1.25,
+                })}
             >
                 {AMENITIES.map((a) => {
                     const sel = a.id === amenity
                     return (
-                        <button
+                        <Button
                             key={a.id}
-                            type="button"
+                            variant={sel ? "contained" : "outlined"}
                             disabled={a.closed}
                             aria-pressed={sel}
                             onClick={() => {
                                 setAmenity(a.id)
                                 setReserved(null)
                             }}
-                            style={{
-                                ...optionBase,
-                                minHeight: 64,
-                                padding: "12px 14px",
-                                borderRadius: 14,
-                                textAlign: "left",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 3,
-                                ...(sel && {
-                                    background: "var(--primary)",
-                                    borderColor: "var(--primary)",
-                                    color: "#fff",
+                            sx={[
+                                optionSx,
+                                unavailableSx,
+                                (theme) => ({
+                                    minHeight: theme.spacing(8),
+                                    py: 1.5,
+                                    px: 1.75,
+                                    borderRadius: `${theme.radius.lg}px`,
+                                    flexDirection: "column",
+                                    alignItems: "flex-start",
+                                    justifyContent: "center",
+                                    gap: 0.375,
+                                    textAlign: "left",
+                                    whiteSpace: "normal",
+                                    "&.Mui-disabled": {
+                                        color: "text.secondary",
+                                    },
                                 }),
-                                ...(a.closed && {
-                                    background: "var(--gray-bg)",
-                                    color: "#5E6A7B",
-                                    cursor: "not-allowed",
-                                }),
-                            }}
+                            ]}
                         >
-                            <span style={{ fontSize: 16, fontWeight: 600 }}>
+                            <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{
+                                    fontWeight: "fontWeightSemiBold",
+                                    lineHeight: 1.2,
+                                }}
+                            >
                                 {a.name}
-                            </span>
-                            <span className="text-sm" style={{ opacity: 0.85 }}>
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                component="span"
+                                sx={{ opacity: 0.85, lineHeight: 1.2 }}
+                            >
                                 {a.note}
-                            </span>
-                        </button>
+                            </Typography>
+                        </Button>
                     )
                 })}
-            </div>
+            </Box>
 
-            <div className="stack" style={{ gap: 10 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 700 }}>{MONTH}</h2>
-                <div
-                    style={{
+            <Stack sx={{ gap: 1.25 }}>
+                <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ fontWeight: "fontWeightBold" }}
+                >
+                    {MONTH}
+                </Typography>
+                <Box
+                    sx={{
                         display: "grid",
                         gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                        gap: 8,
+                        gap: 1,
                     }}
                 >
                     {DAYS.map((d) => {
                         const sel = d.num === day
                         return (
-                            <button
+                            <Button
                                 key={d.num}
-                                type="button"
+                                variant={sel ? "contained" : "outlined"}
+                                color={sel ? "nav" : "primary"}
                                 aria-pressed={sel}
                                 aria-label={`${d.dow} ${MONTH} ${d.num}`}
                                 onClick={() => {
                                     setDay(d.num)
                                     setReserved(null)
                                 }}
-                                style={{
-                                    ...optionBase,
-                                    height: 62,
-                                    borderRadius: 12,
-                                    padding: 0,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: 2,
-                                    ...(sel && {
-                                        background: "var(--nav-bg)",
-                                        borderColor: "var(--nav-bg)",
-                                        color: "#fff",
+                                sx={[
+                                    optionSx,
+                                    (theme) => ({
+                                        minHeight: theme.spacing(7.75),
+                                        p: 0,
+                                        flexDirection: "column",
+                                        gap: 0.25,
                                     }),
-                                }}
+                                ]}
                             >
-                                <span
-                                    style={{
-                                        fontSize: 12,
-                                        fontWeight: 600,
-                                        opacity: 0.85,
-                                    }}
+                                <Typography
+                                    variant="micro"
+                                    component="span"
+                                    sx={{ opacity: 0.85 }}
                                 >
                                     {d.dow}
-                                </span>
-                                <span
-                                    className="display"
-                                    style={{ fontSize: 18 }}
-                                >
+                                </Typography>
+                                <Typography variant="dateDay" component="span">
                                     {d.num}
-                                </span>
-                            </button>
+                                </Typography>
+                            </Button>
                         )
                     })}
-                </div>
-            </div>
+                </Box>
+            </Stack>
 
-            <div className="stack" style={{ gap: 10 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 700 }}>
+            <Stack sx={{ gap: 1.25 }}>
+                <Typography
+                    variant="subtitle1"
+                    component="h2"
+                    sx={{ fontWeight: "fontWeightBold" }}
+                >
                     Available times · 2-hour blocks
-                </h2>
-                <div
-                    style={{
+                </Typography>
+                <Box
+                    sx={(theme) => ({
                         display: "grid",
-                        gridTemplateColumns:
-                            "repeat(auto-fit, minmax(min(120px, 100%), 1fr))",
-                        gap: 8,
-                    }}
+                        gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(15)}, 100%), 1fr))`,
+                        gap: 1,
+                    })}
                 >
                     {TIMES.map((time, i) => {
                         const isBooked = booked.includes(i)
                         const sel = time === slot && !isBooked
                         return (
-                            <button
+                            <Button
                                 key={time}
-                                type="button"
                                 disabled={isBooked}
                                 aria-pressed={sel}
                                 aria-label={isBooked ? `${time}, booked` : time}
@@ -191,63 +212,73 @@ export default function AmenityBooking() {
                                     setSlot(time)
                                     setReserved(null)
                                 }}
-                                style={{
-                                    ...optionBase,
-                                    height: 48,
-                                    borderRadius: 12,
-                                    fontSize: 15,
-                                    fontWeight: 600,
-                                    ...(sel && {
-                                        border: "2px solid var(--primary)",
-                                        background: "var(--primary-soft)",
-                                        color: "var(--primary-ink)",
+                                sx={[
+                                    optionSx,
+                                    unavailableSx,
+                                    (theme) => ({
+                                        minHeight: theme.layout.control.lg,
+                                        "&.Mui-disabled": {
+                                            color: "text.faint",
+                                            textDecoration: "line-through",
+                                        },
                                     }),
-                                    ...(isBooked && {
-                                        background: "var(--gray-bg)",
-                                        color: "var(--faint)",
-                                        textDecoration: "line-through",
-                                        cursor: "not-allowed",
-                                    }),
-                                }}
+                                    sel && {
+                                        border: 2,
+                                        "&.MuiButton-outlined, &.MuiButton-outlined:hover":
+                                            {
+                                                borderColor: "primary.main",
+                                                bgcolor: "primary.soft",
+                                                color: "primary.softContrast",
+                                            },
+                                    },
+                                ]}
                             >
                                 {time}
-                            </button>
+                            </Button>
                         )
                     })}
-                </div>
-            </div>
+                </Box>
+            </Stack>
 
-            <div
-                className="row-wrap"
-                style={{
+            <Stack
+                direction="row"
+                sx={{
+                    flexWrap: "wrap",
+                    alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 12,
-                    paddingTop: 16,
-                    borderTop: "1px solid var(--divider)",
+                    gap: 1.5,
+                    pt: 2,
+                    borderTop: 1,
+                    borderColor: "divider",
                 }}
             >
-                <div className="stack" style={{ gap: 2 }}>
-                    <span className="text-lg strong">{am.name}</span>
-                    <span className="text-md muted">
+                <Stack sx={{ gap: 0.25 }}>
+                    <Typography variant="h6" component="p">
+                        {am.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                         {slotOk ? when : "Pick an open time"}
-                    </span>
-                </div>
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    style={{ height: 48, padding: "0 24px", fontSize: 16 }}
+                    </Typography>
+                </Stack>
+                <Button
+                    variant="contained"
                     disabled={!slotOk}
                     onClick={() => setReserved(`${am.name} · ${when}`)}
+                    sx={(theme) => ({
+                        minHeight: theme.layout.control.lg,
+                        px: 3,
+                        fontSize: theme.typography.subtitle1.fontSize,
+                    })}
                 >
                     Reserve
-                </button>
-            </div>
+                </Button>
+            </Stack>
             {reserved && (
-                <p className="callout callout-info" role="status">
+                <Alert severity="info" role="status">
                     {reserved} is held for you. Reservations will be confirmed
                     once booking is connected.
-                </p>
+                </Alert>
             )}
-        </section>
+        </Card>
     )
 }

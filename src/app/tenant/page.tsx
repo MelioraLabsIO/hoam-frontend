@@ -1,6 +1,15 @@
 import type { Metadata } from "next"
-import Link from "next/link"
-import { Announcement, DateTile, PageHeader } from "@/components/ui"
+import NextLinkComposed from "@/theme/NextLinkComposed"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
+import {
+    Announcement,
+    AutoGrid,
+    DateTile,
+    PageHeader,
+    Split,
+} from "@/components/ui"
 
 export const metadata: Metadata = { title: "Home" }
 
@@ -53,76 +62,96 @@ export default function TenantHome() {
                 description={`Your landlord, ${TENANT.landlord}, handles HOA dues and notices for ${TENANT.home}.`}
             />
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
-                    gap: 16,
-                }}
-            >
-                <Link
+            <AutoGrid kind="cards">
+                <Card
+                    component={NextLinkComposed}
                     href="/tenant/maintenance"
-                    className="card card-hero"
-                    style={{ gap: 6, minHeight: 110 }}
+                    variant="hero"
+                    sx={{ gap: 0.75, textDecoration: "none" }}
                 >
-                    <span className="h2">Report an issue</span>
-                    <span className="text-md" style={{ opacity: 0.9 }}>
+                    <Typography variant="h4" component="span">
+                        Report an issue
+                    </Typography>
+                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
                         Streetlights, gates, common areas. Your landlord gets a
                         copy.
-                    </span>
-                </Link>
-                <Link
+                    </Typography>
+                </Card>
+                <Card
+                    component={NextLinkComposed}
                     href="/tenant/amenities"
-                    className="card"
-                    style={{ gap: 6, minHeight: 110 }}
+                    sx={{ gap: 0.75, textDecoration: "none" }}
                 >
-                    <span className="h2">Book an amenity</span>
-                    <span className="text-md muted">
+                    <Typography variant="h4" component="span">
+                        Book an amenity
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                         Clubhouse, tennis and pickleball courts
-                    </span>
-                </Link>
-                <section className="card" style={{ gap: 8 }}>
-                    <h2 className="h2">Pickup days</h2>
+                    </Typography>
+                </Card>
+                <Card component="section" sx={{ gap: 1 }}>
+                    <Typography variant="h4" component="h2">
+                        Pickup days
+                    </Typography>
                     {PICKUP_DAYS.map((p) => (
-                        <span key={p.label} className="text-md muted">
+                        <Typography
+                            key={p.label}
+                            variant="body2"
+                            color="text.secondary"
+                        >
                             {p.label} · {p.day}
-                        </span>
+                        </Typography>
                     ))}
-                </section>
-            </div>
+                </Card>
+            </AutoGrid>
 
-            <div className="split">
-                <section className="split-main stack">
-                    <h2 className="h2-lg">Community news</h2>
-                    {NEWS.map((n) => (
-                        <Announcement
-                            key={n.title}
-                            meta={n.meta}
-                            title={n.title}
-                            body={n.body}
-                            pinned={n.pinned}
-                        />
-                    ))}
-                </section>
-                <aside
-                    className="split-side card"
-                    style={{ padding: 18, gap: 12 }}
-                >
-                    <h2 className="h3">Coming up</h2>
-                    {EVENTS.map((e) => (
-                        <div className="row" key={e.title}>
-                            <DateTile month={e.month} day={e.day} />
-                            <div className="stack" style={{ gap: 2 }}>
-                                <span className="strong">{e.title}</span>
-                                <span className="text-sm muted">
-                                    {e.detail}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </aside>
-            </div>
+            <Split
+                main={
+                    <Stack component="section" sx={{ gap: 1.5 }}>
+                        <Typography variant="h3" component="h2">
+                            Community news
+                        </Typography>
+                        {NEWS.map((n) => (
+                            <Announcement
+                                key={n.title}
+                                meta={n.meta}
+                                title={n.title}
+                                body={n.body}
+                                pinned={n.pinned}
+                            />
+                        ))}
+                    </Stack>
+                }
+                side={
+                    <Card component="aside" sx={{ p: 2.25, gap: 1.5 }}>
+                        <Typography variant="h5" component="h2">
+                            Coming up
+                        </Typography>
+                        {EVENTS.map((e) => (
+                            <Stack
+                                key={e.title}
+                                direction="row"
+                                sx={{ alignItems: "center", gap: 1.5 }}
+                            >
+                                <DateTile month={e.month} day={e.day} />
+                                <Stack sx={{ gap: 0.25, minWidth: 0 }}>
+                                    <Typography
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
+                                        {e.title}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        {e.detail}
+                                    </Typography>
+                                </Stack>
+                            </Stack>
+                        ))}
+                    </Card>
+                }
+            />
         </>
     )
 }

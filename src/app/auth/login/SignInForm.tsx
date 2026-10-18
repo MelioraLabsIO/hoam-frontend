@@ -1,10 +1,16 @@
 "use client"
 
-import Link from "next/link"
+import Button from "@mui/material/Button"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import FormLabel from "@mui/material/FormLabel"
+import InputAdornment from "@mui/material/InputAdornment"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
 import { useActionState, useState } from "react"
 import { AuthAlert } from "@/components/auth/AuthLayout"
 import { signIn } from "@/lib/auth/actions"
-import "@/components/auth/auth.css"
 
 export default function SignInForm({ next }: { next?: string }) {
     const [state, action, pending] = useActionState(signIn, undefined)
@@ -12,63 +18,81 @@ export default function SignInForm({ next }: { next?: string }) {
     const error = state?.error
 
     return (
-        <form action={action} className="auth-form">
+        <Stack component="form" action={action} sx={{ gap: 2 }}>
             {error && <AuthAlert>{error}</AuthAlert>}
             {next && <input type="hidden" name="next" value={next} />}
-            <div className="field">
-                <label htmlFor="si-email" className="label">
-                    Email
-                </label>
-                <input
-                    id="si-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="auth-input"
-                />
-            </div>
-            <div className="field">
-                <div className="spread" style={{ alignItems: "baseline" }}>
-                    <label htmlFor="si-pw" className="label">
-                        Password
-                    </label>
-                    <Link
-                        href="/auth/forgot"
-                        className="link-strong"
-                        style={{ textDecoration: "none" }}
-                    >
+            <TextField
+                id="si-email"
+                name="email"
+                type="email"
+                label="Email"
+                autoComplete="email"
+                size="medium"
+                slotProps={{ htmlInput: { required: true } }}
+            />
+            <Stack sx={{ gap: 0.75 }}>
+                <Stack
+                    direction="row"
+                    sx={{
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                        gap: 1.5,
+                    }}
+                >
+                    <FormLabel htmlFor="si-pw">Password</FormLabel>
+                    <Link href="/auth/forgot" variant="label">
                         Forgot password?
                     </Link>
-                </div>
-                <div className="auth-pw">
-                    <input
-                        id="si-pw"
-                        name="password"
-                        type={shown ? "text" : "password"}
-                        autoComplete="current-password"
-                        required
-                        className="auth-input"
-                        aria-invalid={error ? true : undefined}
-                    />
-                    <button
-                        type="button"
-                        className="auth-pw-toggle"
-                        aria-pressed={shown}
-                        aria-label={shown ? "Hide password" : "Show password"}
-                        onClick={() => setShown((s) => !s)}
-                    >
-                        {shown ? "Hide" : "Show"}
-                    </button>
-                </div>
-            </div>
-            <label className="auth-check">
-                <input type="checkbox" name="remember" />
-                Keep me signed in on this device
-            </label>
-            <button type="submit" className="auth-btn" disabled={pending}>
+                </Stack>
+                <TextField
+                    id="si-pw"
+                    name="password"
+                    type={shown ? "text" : "password"}
+                    autoComplete="current-password"
+                    size="medium"
+                    error={Boolean(error)}
+                    slotProps={{
+                        htmlInput: { required: true },
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <Button
+                                        variant="text"
+                                        size="small"
+                                        aria-pressed={shown}
+                                        aria-label={
+                                            shown
+                                                ? "Hide password"
+                                                : "Show password"
+                                        }
+                                        onClick={() => setShown((s) => !s)}
+                                        sx={(theme) => ({
+                                            minHeight: theme.layout.control.sm,
+                                            px: 1.5,
+                                        })}
+                                    >
+                                        {shown ? "Hide" : "Show"}
+                                    </Button>
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
+            </Stack>
+            <FormControlLabel
+                control={<Checkbox name="remember" />}
+                label="Keep me signed in on this device"
+                sx={{ "& .MuiFormControlLabel-label": { typography: "body1" } }}
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={pending}
+            >
                 {pending ? "Signing in…" : "Sign in"}
-            </button>
-        </form>
+            </Button>
+        </Stack>
     )
 }

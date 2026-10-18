@@ -1,5 +1,16 @@
 "use client"
 
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import ToggleButton from "@mui/material/ToggleButton"
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
 import { Pill, type Tone } from "@/components/ui"
 
@@ -82,57 +93,78 @@ export default function BillingInvoices() {
     const rows = INVOICES.filter((i) => tab === "all" || i.status === tab)
 
     return (
-        <section className="card split-main">
-            <div className="spread" style={{ alignItems: "center" }}>
-                <h2 className="h2">Invoices</h2>
-                <div
-                    role="tablist"
+        <Card component="section">
+            <Stack
+                direction="row"
+                sx={{
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 1.5,
+                }}
+            >
+                <Typography variant="h4" component="h2">
+                    Invoices
+                </Typography>
+                <ToggleButtonGroup
+                    exclusive
                     aria-label="Invoice status"
-                    className="tabs"
+                    value={tab}
+                    onChange={(_, next: "all" | Status | null) => {
+                        if (next) setTab(next)
+                    }}
                 >
                     {TABS.map((t) => (
-                        <button
+                        <ToggleButton
                             key={t.id}
-                            type="button"
-                            role="tab"
-                            className="tab"
-                            aria-selected={tab === t.id}
+                            value={t.id}
                             aria-controls="billing-invoices"
-                            onClick={() => setTab(t.id)}
                         >
                             {t.label}
-                        </button>
+                        </ToggleButton>
                     ))}
-                </div>
-            </div>
-            <div className="table-wrap" id="billing-invoices" role="tabpanel">
-                <table className="table" style={{ minWidth: 600 }}>
-                    <thead>
-                        <tr>
-                            <th>Home</th>
-                            <th>Invoice</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Method</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                </ToggleButtonGroup>
+            </Stack>
+            <TableContainer id="billing-invoices" aria-live="polite">
+                <Table sx={(theme) => ({ minWidth: theme.spacing(75) })}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Home</TableCell>
+                            <TableCell>Invoice</TableCell>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell>Method</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {rows.map((i) => (
-                            <tr key={i.home + i.label}>
-                                <td className="strong">{i.home}</td>
-                                <td className="muted">{i.label}</td>
-                                <td className="strong">{i.amount}</td>
-                                <td>
+                            <TableRow key={i.home + i.label}>
+                                <TableCell
+                                    sx={{ fontWeight: "fontWeightSemiBold" }}
+                                >
+                                    {i.home}
+                                </TableCell>
+                                <TableCell sx={{ color: "text.secondary" }}>
+                                    {i.label}
+                                </TableCell>
+                                <TableCell
+                                    sx={{ fontWeight: "fontWeightSemiBold" }}
+                                >
+                                    {i.amount}
+                                </TableCell>
+                                <TableCell>
                                     <Pill tone={STATUS[i.status].tone}>
                                         {STATUS[i.status].label}
                                     </Pill>
-                                </td>
-                                <td className="muted">{i.method}</td>
-                            </tr>
+                                </TableCell>
+                                <TableCell sx={{ color: "text.secondary" }}>
+                                    {i.method}
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Card>
     )
 }

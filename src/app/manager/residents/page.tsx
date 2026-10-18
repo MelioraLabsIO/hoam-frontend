@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Button from "@mui/material/Button"
 import { PageHeader } from "@/components/ui"
 import ResidentsDirectory from "./ResidentsDirectory"
 
@@ -12,12 +13,8 @@ export default function ManagerResidents() {
                 title="Residents"
                 actions={
                     <>
-                        <button type="button" className="btn">
-                            Import CSV
-                        </button>
-                        <button type="button" className="btn btn-primary">
-                            Add household
-                        </button>
+                        <Button>Import CSV</Button>
+                        <Button variant="contained">Add household</Button>
                     </>
                 }
             />

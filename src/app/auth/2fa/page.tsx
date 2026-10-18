@@ -1,3 +1,4 @@
+import Link from "@mui/material/Link"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { AuthLayout } from "@/components/auth/AuthLayout"
@@ -23,7 +24,7 @@ export default async function TwoFactorPage({
             footer={
                 <>
                     Lost your phone and your backup codes?{" "}
-                    <a href="mailto:">Contact HOA management</a> to verify your
+                    <Link href="mailto:">Contact HOA management</Link> to verify your
                     identity.
                 </>
             }

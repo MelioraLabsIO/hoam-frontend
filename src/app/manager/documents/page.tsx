@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Button from "@mui/material/Button"
 import { PageHeader } from "@/components/ui"
 import DocumentsLibrary from "./DocumentsLibrary"
 
@@ -12,12 +13,8 @@ export default function ManagerDocuments() {
                 title="Documents"
                 actions={
                     <>
-                        <button type="button" className="btn">
-                            New folder
-                        </button>
-                        <button type="button" className="btn btn-primary">
-                            Upload
-                        </button>
+                        <Button>New folder</Button>
+                        <Button variant="contained">Upload</Button>
                     </>
                 }
             />

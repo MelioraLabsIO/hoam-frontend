@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
-import { KeyValue } from "@/components/ui"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
+import { AutoGrid, KeyValue, TextLink } from "@/components/ui"
 import HouseholdLists from "./HouseholdLists"
 
 export const metadata: Metadata = { title: "My household" }
@@ -15,34 +18,26 @@ const LEASE = {
 export default function TenantHousehold() {
     return (
         <>
-            <h1 className="h1">My household</h1>
+            <Typography variant="h1">My household</Typography>
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(340px, 100%), 1fr))",
-                    gap: 16,
-                    alignItems: "start",
-                }}
-            >
-                <section className="card" style={{ gap: 12 }}>
-                    <h2 className="h2">Lease</h2>
-                    <div className="stack" style={{ gap: 8 }}>
+            <AutoGrid kind="cards" sx={{ alignItems: "start" }}>
+                <Card component="section" sx={{ gap: 1.5 }}>
+                    <Typography variant="h4" component="h2">
+                        Lease
+                    </Typography>
+                    <Stack sx={{ gap: 1 }}>
                         <KeyValue label="Home" value={LEASE.home} />
                         <KeyValue label="Lease" value={LEASE.term} />
                         <KeyValue label="Landlord" value={LEASE.landlord} />
-                    </div>
-                    <a href="#" className="link-strong">
-                        Message your landlord
-                    </a>
-                    <span className="text-sm muted">
+                    </Stack>
+                    <TextLink href="#">Message your landlord</TextLink>
+                    <Typography variant="caption" color="text.secondary">
                         Only your landlord can change lease details.
-                    </span>
-                </section>
+                    </Typography>
+                </Card>
 
                 <HouseholdLists landlordFirst={LEASE.landlordFirst} />
-            </div>
+            </AutoGrid>
         </>
     )
 }

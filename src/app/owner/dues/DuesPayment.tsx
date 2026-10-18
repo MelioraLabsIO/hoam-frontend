@@ -1,7 +1,22 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Checkbox from "@mui/material/Checkbox"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Switch from "@mui/material/Switch"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
-import Switch from "../_components/Switch"
+import { Split, VisuallyHidden } from "@/components/ui"
 
 // Placeholder data until the Supabase tables exist.
 const HOMES = [
@@ -26,163 +41,247 @@ export default function DuesPayment() {
     const total = `$${(n * AMOUNT).toFixed(2)}`
 
     return (
-        <div className="split">
-            <section
-                className="card split-main"
-                style={{ padding: 22, gap: 16 }}
-            >
-                <h2 className="h2">Q4 2026 · due Nov 1</h2>
-                {HOMES.map((h) => {
-                    const on = !!picked[h.id]
-                    return (
-                        <label
-                            key={h.id}
-                            className="row"
-                            style={{
-                                alignItems: "flex-start",
-                                gap: 14,
-                                padding: on ? 13 : 14,
-                                borderRadius: 14,
-                                border: on
-                                    ? "2px solid var(--primary)"
-                                    : "1px solid var(--border)",
+        <Split
+            main={
+                <Card component="section" sx={{ p: 2.75, gap: 2 }}>
+                    <Typography variant="h4" component="h2">
+                        Q4 2026 · due Nov 1
+                    </Typography>
+                    {HOMES.map((h) => {
+                        const on = !!picked[h.id]
+                        return (
+                            <Box
+                                key={h.id}
+                                component="label"
+                                sx={(theme) => ({
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    gap: 1.75,
+                                    p: on ? 1.625 : 1.75,
+                                    borderRadius: `${theme.radius.lg}px`,
+                                    border: on ? 2 : 1,
+                                    borderColor: on
+                                        ? "primary.main"
+                                        : "border.main",
+                                    cursor: "pointer",
+                                })}
+                            >
+                                <Checkbox
+                                    checked={on}
+                                    onChange={() => {
+                                        setPaid(null)
+                                        setPicked({ ...picked, [h.id]: !on })
+                                    }}
+                                    sx={{ p: 0, mt: 0.25 }}
+                                />
+                                <Stack sx={{ flex: "1 1 auto", minWidth: 0, gap: 0.75 }}>
+                                    <Stack
+                                        direction="row"
+                                        sx={{
+                                            flexWrap: "wrap",
+                                            alignItems: "baseline",
+                                            justifyContent: "space-between",
+                                            gap: 1.5,
+                                        }}
+                                    >
+                                        <Typography
+                                            variant="subtitle1"
+                                            component="span"
+                                            sx={{ fontWeight: "fontWeightSemiBold" }}
+                                        >
+                                            {h.address}
+                                        </Typography>
+                                        <Typography
+                                            variant="subtitle1"
+                                            component="span"
+                                            sx={{ fontWeight: "fontWeightBold" }}
+                                        >
+                                            $285.00
+                                        </Typography>
+                                    </Stack>
+                                    <Typography
+                                        variant="body2"
+                                        component="span"
+                                        color="text.secondary"
+                                    >
+                                        Assessment $265.00 · Reserve fund $20.00 ·{" "}
+                                        {h.note}
+                                    </Typography>
+                                </Stack>
+                            </Box>
+                        )
+                    })}
+                    <Stack
+                        direction="row"
+                        sx={{
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 1.5,
+                            pt: 1.75,
+                            borderTop: 1,
+                            borderColor: "divider",
+                        }}
+                    >
+                        <Stack sx={{ gap: 0.25 }}>
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                color="text.secondary"
+                            >
+                                Paying from Bank account ••4821 ·{" "}
+                                <Link href="#">Change</Link>
+                            </Typography>
+                            <Typography variant="h2" component="span">
+                                {total}
+                            </Typography>
+                        </Stack>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            disabled={n === 0}
+                            onClick={() =>
+                                setPaid(
+                                    `Payment of ${total} is ready to send once payments are connected.`
+                                )
+                            }
+                        >
+                            {n === 0
+                                ? "Select a home"
+                                : `Pay ${n} ${n === 1 ? "home" : "homes"}`}
+                        </Button>
+                    </Stack>
+                    {paid && (
+                        <Alert severity="info" role="status">
+                            {paid}
+                        </Alert>
+                    )}
+                </Card>
+            }
+            side={
+                <Stack component="aside" sx={{ gap: 2 }}>
+                    <Card
+                        component="section"
+                        sx={{
+                            p: 2.25,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 1.75,
+                        }}
+                    >
+                        <Stack
+                            component="label"
+                            htmlFor="autopay"
+                            sx={{
+                                flex: "1 1 auto",
+                                minWidth: 0,
+                                gap: 0.375,
                                 cursor: "pointer",
                             }}
                         >
-                            <input
-                                type="checkbox"
-                                checked={on}
-                                onChange={() => {
-                                    setPaid(null)
-                                    setPicked({ ...picked, [h.id]: !on })
-                                }}
-                                style={{
-                                    width: 20,
-                                    height: 20,
-                                    margin: "2px 0 0",
-                                    accentColor: "var(--primary)",
-                                }}
-                            />
-                            <div className="stack grow" style={{ gap: 6 }}>
-                                <div className="spread">
-                                    <span
-                                        className="strong"
-                                        style={{ fontSize: 16 }}
-                                    >
-                                        {h.address}
-                                    </span>
-                                    <span
-                                        className="bold"
-                                        style={{ fontSize: 16 }}
-                                    >
-                                        $285.00
-                                    </span>
-                                </div>
-                                <span className="text-md muted">
-                                    Assessment $265.00 · Reserve fund $20.00 ·{" "}
-                                    {h.note}
-                                </span>
-                            </div>
-                        </label>
-                    )
-                })}
-                <div
-                    className="row-wrap"
-                    style={{
-                        justifyContent: "space-between",
-                        gap: 12,
-                        paddingTop: 14,
-                        borderTop: "1px solid var(--divider)",
-                    }}
-                >
-                    <div className="stack" style={{ gap: 2 }}>
-                        <span className="text-md muted">
-                            Paying from Bank account ••4821 ·{" "}
-                            <a href="#" className="strong">
-                                Change
-                            </a>
-                        </span>
-                        <span className="display" style={{ fontSize: 30 }}>
-                            {total}
-                        </span>
-                    </div>
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        disabled={n === 0}
-                        onClick={() =>
-                            setPaid(
-                                `Payment of ${total} is ready to send once payments are connected.`
-                            )
-                        }
-                        style={{
-                            height: 52,
-                            padding: "0 28px",
-                            borderRadius: 14,
-                            fontSize: 17,
-                            ...(n === 0
-                                ? {
-                                      background: "#9aa6b8",
-                                      cursor: "not-allowed",
-                                  }
-                                : {}),
-                        }}
-                    >
-                        {n === 0
-                            ? "Select a home"
-                            : `Pay ${n} ${n === 1 ? "home" : "homes"}`}
-                    </button>
-                </div>
-                {paid && (
-                    <p className="callout callout-info" role="status">
-                        {paid}
-                    </p>
-                )}
-            </section>
+                            <Typography
+                                variant="subtitle1"
+                                component="span"
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
+                            >
+                                Autopay
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                color="text.secondary"
+                            >
+                                {autopay
+                                    ? "On for both homes · pays on the due date"
+                                    : "Off · never miss a due date"}
+                            </Typography>
+                        </Stack>
+                        <Switch
+                            id="autopay"
+                            checked={autopay}
+                            onChange={(e) => setAutopay(e.target.checked)}
+                        />
+                    </Card>
+                    <Card component="section" sx={{ p: 2.25, gap: 1.25 }}>
+                        <Typography variant="h5" component="h2">
+                            Statements
+                        </Typography>
+                        <Link href="#">2026 year-to-date (PDF)</Link>
+                        <Link href="#">2025 annual statement (PDF)</Link>
+                        <Link href="#">Request a payoff letter</Link>
+                    </Card>
+                </Stack>
+            }
+        />
+    )
+}
 
-            <aside className="split-side stack" style={{ gap: 16 }}>
-                <section
-                    className="card row"
-                    style={{
-                        padding: 18,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 14,
-                    }}
-                >
-                    <label
-                        htmlFor="autopay"
-                        className="stack grow"
-                        style={{ gap: 3, cursor: "pointer" }}
-                    >
-                        <span className="strong" style={{ fontSize: 16 }}>
-                            Autopay
-                        </span>
-                        <span className="text-md muted">
-                            {autopay
-                                ? "On for both homes · pays on the due date"
-                                : "Off · never miss a due date"}
-                        </span>
-                    </label>
-                    <Switch
-                        id="autopay"
-                        checked={autopay}
-                        onChange={setAutopay}
-                    />
-                </section>
-                <section className="card" style={{ padding: 18, gap: 10 }}>
-                    <h2 className="h3">Statements</h2>
-                    <a href="#" className="strong">
-                        2026 year-to-date (PDF)
-                    </a>
-                    <a href="#" className="strong">
-                        2025 annual statement (PDF)
-                    </a>
-                    <a href="#" className="strong">
-                        Request a payoff letter
-                    </a>
-                </section>
-            </aside>
-        </div>
+export type Payment = {
+    date: string
+    home: string
+    description: string
+    amount: string
+    waived?: boolean
+}
+
+/** Payment history table (client so its minimum width can come from the theme). */
+export function PaymentHistory({ rows }: { rows: Payment[] }) {
+    return (
+        <TableContainer>
+            <Table sx={(theme) => ({ minWidth: theme.spacing(75) })}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Home</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>Receipt</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows.map((p) => (
+                        <TableRow key={p.date + p.home + p.description}>
+                            <TableCell>{p.date}</TableCell>
+                            <TableCell>{p.home}</TableCell>
+                            <TableCell sx={{ color: "text.secondary" }}>
+                                {p.description}
+                            </TableCell>
+                            <TableCell
+                                sx={{
+                                    fontWeight: "fontWeightSemiBold",
+                                    ...(p.waived
+                                        ? {
+                                              color: "text.secondary",
+                                              textDecoration: "line-through",
+                                          }
+                                        : {}),
+                                }}
+                            >
+                                {p.waived && <VisuallyHidden>Waived: </VisuallyHidden>}
+                                {p.amount}
+                            </TableCell>
+                            <TableCell>
+                                {p.waived ? (
+                                    <Typography
+                                        variant="body2"
+                                        component="span"
+                                        color="text.secondary"
+                                    >
+                                        —
+                                    </Typography>
+                                ) : (
+                                    <Link
+                                        href="#"
+                                        aria-label={`Receipt PDF, ${p.description}, ${p.home}`}
+                                    >
+                                        PDF
+                                    </Link>
+                                )}
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     )
 }

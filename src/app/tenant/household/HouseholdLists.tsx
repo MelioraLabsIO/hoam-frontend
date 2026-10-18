@@ -1,5 +1,11 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { useState, type FormEvent } from "react"
 
 type Entry = { name: string; detail: string }
@@ -11,6 +17,13 @@ const PEOPLE: Entry[] = [
 ]
 const VEHICLES: Entry[] = [{ name: "Gray Honda CR-V", detail: "Plate [PLATE]" }]
 const PETS: Entry[] = [{ name: "Biscuit", detail: "Dog · beagle" }]
+
+/** Text button styled like a bold link, flush with the card's left edge. */
+const linkButtonSx = {
+    alignSelf: "flex-start",
+    p: 0,
+    typography: "label",
+} as const
 
 /**
  * A list card whose "add" link opens a small inline form.
@@ -49,83 +62,75 @@ function EntryCard({
     }
 
     return (
-        <section className="card" style={{ gap: 12 }}>
-            <h2 className="h2">{title}</h2>
-            <div className="stack" style={{ gap: 0 }}>
+        <Card component="section" sx={{ gap: 1.5 }}>
+            <Typography variant="h4" component="h2">
+                {title}
+            </Typography>
+            <Stack>
                 {entries.map((en, i) => (
-                    <div
+                    <Stack
                         key={en.name + i}
-                        className="spread"
-                        style={{
-                            padding: "10px 0",
-                            borderBottom: "1px solid var(--divider)",
+                        direction="row"
+                        sx={{
+                            flexWrap: "wrap",
                             alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 1.5,
+                            py: 1.25,
+                            borderBottom: 1,
+                            borderColor: "divider",
                         }}
                     >
-                        <span className="strong">{en.name}</span>
-                        <span className="muted">{en.detail}</span>
-                    </div>
+                        <Typography sx={{ fontWeight: "fontWeightSemiBold" }}>
+                            {en.name}
+                        </Typography>
+                        <Typography color="text.secondary">
+                            {en.detail}
+                        </Typography>
+                    </Stack>
                 ))}
-            </div>
+            </Stack>
             {adding ? (
-                <form className="stack" style={{ gap: 10 }} onSubmit={onSubmit}>
-                    <div className="field">
-                        <label htmlFor={`${id}-name`} className="label">
-                            {nameLabel}
-                        </label>
-                        <input
-                            id={`${id}-name`}
-                            name="name"
-                            className="input"
-                            required
-                            autoFocus
-                        />
-                    </div>
-                    <div className="field">
-                        <label htmlFor={`${id}-detail`} className="label">
-                            {detailLabel}
-                        </label>
-                        <input
-                            id={`${id}-detail`}
-                            name="detail"
-                            className="input"
-                        />
-                    </div>
-                    <div className="row-wrap">
-                        <button
-                            type="submit"
-                            className="btn btn-primary btn-sm"
-                        >
+                <Stack component="form" sx={{ gap: 1.25 }} onSubmit={onSubmit}>
+                    <TextField
+                        id={`${id}-name`}
+                        name="name"
+                        label={nameLabel}
+                        required
+                        autoFocus
+                    />
+                    <TextField
+                        id={`${id}-detail`}
+                        name="detail"
+                        label={detailLabel}
+                    />
+                    <Stack
+                        direction="row"
+                        sx={{ flexWrap: "wrap", alignItems: "center", gap: 1.25 }}
+                    >
+                        <Button type="submit" variant="contained" size="small">
                             Save
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-sm"
-                            onClick={() => setAdding(false)}
-                        >
+                        </Button>
+                        <Button size="small" onClick={() => setAdding(false)}>
                             Cancel
-                        </button>
-                    </div>
-                </form>
+                        </Button>
+                    </Stack>
+                </Stack>
             ) : (
-                <button
-                    type="button"
-                    className="link-strong"
+                <Button
+                    variant="text"
                     onClick={() => setAdding(true)}
-                    style={{
-                        alignSelf: "flex-start",
-                        padding: 0,
-                        border: "none",
-                        background: "none",
-                        color: "var(--primary)",
-                        cursor: "pointer",
-                    }}
+                    sx={linkButtonSx}
                 >
                     {addLabel}
-                </button>
+                </Button>
             )}
-            {note && <span className="text-sm muted">{note}</span>}
-        </section>
+            {note && (
+                <Typography variant="caption" color="text.secondary">
+                    {note}
+                </Typography>
+            )}
+        </Card>
     )
 }
 
@@ -168,35 +173,29 @@ export default function HouseholdLists({
                 detailLabel="Type and breed"
                 format={(d) => d || "Pet"}
             />
-            <section className="card" style={{ gap: 10 }}>
-                <h2 className="h2">Gate &amp; pool access</h2>
-                <span className="lead">
+            <Card component="section" sx={{ gap: 1.25 }}>
+                <Typography variant="h4" component="h2">
+                    Gate &amp; pool access
+                </Typography>
+                <Typography variant="lead" color="text.secondary">
                     Your landlord hasn&apos;t shared access codes in the portal
                     yet. Ask {landlordFirst} for the current codes.
-                </span>
+                </Typography>
                 {askedAccess ? (
-                    <p className="callout callout-info" role="status">
+                    <Alert severity="info" role="status">
                         We&apos;ll let {landlordFirst} know you asked for access
                         codes.
-                    </p>
+                    </Alert>
                 ) : (
-                    <button
-                        type="button"
-                        className="link-strong"
+                    <Button
+                        variant="text"
                         onClick={() => setAskedAccess(true)}
-                        style={{
-                            alignSelf: "flex-start",
-                            padding: 0,
-                            border: "none",
-                            background: "none",
-                            color: "var(--primary)",
-                            cursor: "pointer",
-                        }}
+                        sx={linkButtonSx}
                     >
                         Ask for access
-                    </button>
+                    </Button>
                 )}
-            </section>
+            </Card>
         </>
     )
 }

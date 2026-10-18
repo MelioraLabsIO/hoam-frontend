@@ -1,8 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { Pill } from "@/components/ui"
-import Switch from "../_components/Switch"
+import Avatar from "@mui/material/Avatar"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Switch from "@mui/material/Switch"
+import Typography from "@mui/material/Typography"
+import { useState, type ReactNode } from "react"
+import { ListRow, Pill } from "@/components/ui"
 
 type PermId = "book" | "maint" | "news" | "gate"
 
@@ -26,6 +31,55 @@ const PERMS: { id: PermId; label: string; note: string }[] = [
     },
 ]
 
+/** One home's card; two sit side by side and wrap under on narrow screens. */
+export function HomeCard({ children }: { children: ReactNode }) {
+    return (
+        <Card
+            component="section"
+            sx={(theme) => ({
+                flex: `1 1 ${theme.spacing(47.5)}`,
+                p: 2.75,
+                gap: 2,
+            })}
+        >
+            {children}
+        </Card>
+    )
+}
+
+/** Address, lot line and status pill at the top of a home card. */
+export function HomeHeader({
+    address,
+    detail,
+    pill,
+}: {
+    address: string
+    detail: string
+    pill: ReactNode
+}) {
+    return (
+        <Stack
+            direction="row"
+            sx={{
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 1,
+            }}
+        >
+            <Stack sx={{ gap: 0.5 }}>
+                <Typography variant="h3" component="h2">
+                    {address}
+                </Typography>
+                <Typography variant="body2" component="span" color="text.secondary">
+                    {detail}
+                </Typography>
+            </Stack>
+            {pill}
+        </Stack>
+    )
+}
+
 export default function TenantAccess() {
     const [perms, setPerms] = useState<Record<PermId, boolean>>({
         book: true,
@@ -35,105 +89,120 @@ export default function TenantAccess() {
     })
 
     return (
-        <section
-            className="card"
-            style={{ flex: "1 1 380px", padding: 22, gap: 16 }}
-        >
-            <div
-                className="row-wrap"
-                style={{
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: 8,
-                }}
-            >
-                <div className="stack" style={{ gap: 4 }}>
-                    <h2 className="h2-lg">9 Heron Way</h2>
-                    <span className="text-md muted">Lot 12 · townhome</span>
-                </div>
-                <Pill tone="teal">
-                    <span className="bold">Rented</span>
-                </Pill>
-            </div>
+        <HomeCard>
+            <HomeHeader
+                address="9 Heron Way"
+                detail="Lot 12 · townhome"
+                pill={
+                    <Pill tone="teal">
+                        <Typography
+                            variant="inherit"
+                            component="span"
+                            sx={{ fontWeight: "fontWeightBold" }}
+                        >
+                            Rented
+                        </Typography>
+                    </Pill>
+                }
+            />
 
-            <div
-                className="row"
-                style={{
-                    padding: 14,
-                    borderRadius: 14,
-                    background: "var(--surface-muted)",
-                }}
+            <Stack
+                direction="row"
+                sx={(theme) => ({
+                    alignItems: "center",
+                    gap: 1.5,
+                    p: 1.75,
+                    borderRadius: `${theme.radius.lg}px`,
+                    bgcolor: "background.muted",
+                })}
             >
-                <span
-                    className="avatar"
-                    style={{
-                        width: 44,
-                        height: 44,
-                        background: "var(--teal)",
-                        fontSize: 15,
-                    }}
+                <Avatar
+                    component="span"
                     aria-hidden="true"
+                    sx={(theme) => ({
+                        width: theme.layout.control.md,
+                        height: theme.layout.control.md,
+                        bgcolor: "teal.main",
+                        color: "teal.contrastText",
+                        fontSize: theme.typography.body1.fontSize,
+                    })}
                 >
                     JL
-                </span>
-                <div className="stack grow" style={{ gap: 2 }}>
-                    <span className="strong" style={{ fontSize: 16 }}>
+                </Avatar>
+                <Stack sx={{ flex: "1 1 auto", minWidth: 0, gap: 0.25 }}>
+                    <Typography
+                        variant="subtitle1"
+                        component="span"
+                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                    >
                         Jordan Lee
-                    </span>
-                    <span className="text-sm muted">
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                         Lease Aug 1, 2025 – Jul 31, 2027 · joined the tenant
                         portal
-                    </span>
-                </div>
-            </div>
+                    </Typography>
+                </Stack>
+            </Stack>
 
-            <div className="stack" style={{ gap: 2 }}>
-                <h3 className="text-md strong" style={{ paddingBottom: 4 }}>
+            <Stack sx={{ gap: 0.25 }}>
+                <Typography
+                    variant="body2"
+                    component="h3"
+                    sx={{ fontWeight: "fontWeightSemiBold", pb: 0.5 }}
+                >
                     What Jordan can do
-                </h3>
+                </Typography>
                 {PERMS.map((p) => (
-                    <div
-                        key={p.id}
-                        className="list-row"
-                        style={{
-                            padding: "10px 0",
-                            borderBottom: "1px solid var(--divider)",
-                        }}
-                    >
-                        <div className="stack grow" style={{ gap: 2 }}>
-                            <span className="strong">{p.label}</span>
-                            <span className="text-sm muted">{p.note}</span>
-                        </div>
+                    <ListRow key={p.id} sx={{ py: 1.25 }}>
+                        <Stack sx={{ flex: "1 1 auto", minWidth: 0, gap: 0.25 }}>
+                            <Typography
+                                component="span"
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
+                            >
+                                {p.label}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                {p.note}
+                            </Typography>
+                        </Stack>
                         <Switch
-                            label={p.label}
+                            color="teal"
                             checked={perms[p.id]}
-                            onChange={(v) => setPerms({ ...perms, [p.id]: v })}
-                            onColor="var(--teal)"
+                            onChange={(e) =>
+                                setPerms({ ...perms, [p.id]: e.target.checked })
+                            }
+                            slotProps={{ input: { "aria-label": p.label } }}
                         />
-                    </div>
+                    </ListRow>
                 ))}
-                <span className="text-sm muted" style={{ paddingTop: 8 }}>
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ pt: 1 }}
+                >
                     Dues, violations and votes always stay with you. Tenants
                     never see them.
-                </span>
-            </div>
+                </Typography>
+            </Stack>
 
-            <div className="row-wrap">
-                <button
-                    type="button"
-                    className="btn"
-                    style={{ flex: "1 1 140px" }}
+            <Stack
+                direction="row"
+                sx={{ flexWrap: "wrap", alignItems: "center", gap: 1.25 }}
+            >
+                <Button
+                    sx={(theme) => ({ flex: `1 1 ${theme.spacing(17.5)}` })}
                 >
                     Upload lease
-                </button>
-                <button
-                    type="button"
-                    className="btn"
-                    style={{ flex: "1 1 140px", color: "var(--amber-fg)" }}
+                </Button>
+                <Button
+                    sx={(theme) => ({
+                        flex: `1 1 ${theme.spacing(17.5)}`,
+                        color: "amber.dark",
+                    })}
                 >
                     End tenancy
-                </button>
-            </div>
-        </section>
+                </Button>
+            </Stack>
+        </HomeCard>
     )
 }

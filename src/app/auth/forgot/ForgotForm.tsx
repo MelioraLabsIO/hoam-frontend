@@ -1,8 +1,17 @@
 "use client"
 
-import Link from "next/link"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
 import { useActionState } from "react"
-import { AuthAlert, AuthHeader, AuthIcon } from "@/components/auth/AuthLayout"
+import {
+    AuthAlert,
+    AuthHeader,
+    AuthIcon,
+    AuthNote,
+} from "@/components/auth/AuthLayout"
 import { requestPasswordReset } from "@/lib/auth/actions"
 
 /** d.ortega@example.com → d•••@example.com */
@@ -23,6 +32,16 @@ export default function ForgotForm({
         undefined
     )
 
+    const back = (
+        <Link
+            href="/auth/login"
+            variant="body1"
+            sx={{ alignSelf: "center", fontWeight: "fontWeightSemiBold" }}
+        >
+            Back to sign in
+        </Link>
+    )
+
     if (state?.ok && state.message) {
         return (
             <>
@@ -33,39 +52,43 @@ export default function ForgotForm({
                     choose {invite ? "your" : "a new"} password is on its way.
                     It works once and expires in 30 minutes.
                 </AuthHeader>
-                <form action={action} className="auth-note">
-                    <input type="hidden" name="email" value={state.message} />
-                    Don&apos;t see it? Check spam, or{" "}
-                    <button
-                        type="submit"
-                        className="auth-link-btn"
-                        disabled={pending}
-                    >
-                        {pending ? "sending…" : "resend the link"}
-                    </button>
-                    .
-                </form>
+                <AuthNote>
+                    <Box component="form" action={action}>
+                        <input
+                            type="hidden"
+                            name="email"
+                            value={state.message}
+                        />
+                        Don&apos;t see it? Check spam, or{" "}
+                        <Button
+                            type="submit"
+                            variant="text"
+                            disabled={pending}
+                            sx={{
+                                p: 0,
+                                minHeight: 0,
+                                font: "inherit",
+                                fontWeight: "fontWeightSemiBold",
+                                verticalAlign: "baseline",
+                            }}
+                        >
+                            {pending ? "sending…" : "resend the link"}
+                        </Button>
+                        .
+                    </Box>
+                </AuthNote>
                 {demo && (
-                    <Link
-                        href="/auth/reset"
-                        className="auth-btn auth-btn-outline"
-                    >
+                    <Button href="/auth/reset" size="large">
                         Open the link (demo mode)
-                    </Link>
+                    </Button>
                 )}
-                <Link
-                    href="/auth/login"
-                    className="auth-link"
-                    style={{ alignSelf: "center" }}
-                >
-                    Back to sign in
-                </Link>
+                {back}
             </>
         )
     }
 
     return (
-        <form action={action} className="auth-form" style={{ gap: 20 }}>
+        <Stack component="form" action={action} sx={{ gap: 2.5 }}>
             <AuthHeader
                 title={invite ? "Set up your account" : "Reset your password"}
             >
@@ -74,33 +97,28 @@ export default function ForgotForm({
                     : "Enter the email you sign in with. We'll send you a link to choose a new password."}
             </AuthHeader>
             {state?.error && <AuthAlert>{state.error}</AuthAlert>}
-            <div className="field">
-                <label htmlFor="fp-email" className="label">
-                    Email
-                </label>
-                <input
-                    id="fp-email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="auth-input"
-                />
-            </div>
-            <button type="submit" className="auth-btn" disabled={pending}>
+            <TextField
+                id="fp-email"
+                name="email"
+                type="email"
+                label="Email"
+                autoComplete="email"
+                size="medium"
+                slotProps={{ htmlInput: { required: true } }}
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={pending}
+            >
                 {pending
                     ? "Sending…"
                     : invite
                       ? "Send setup link"
                       : "Send reset link"}
-            </button>
-            <Link
-                href="/auth/login"
-                className="auth-link"
-                style={{ alignSelf: "center" }}
-            >
-                Back to sign in
-            </Link>
-        </form>
+            </Button>
+            {back}
+        </Stack>
     )
 }
