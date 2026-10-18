@@ -1,6 +1,19 @@
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import type { Metadata } from "next"
-import Link from "next/link"
-import { Announcement, DateTile, Pill, type Tone } from "@/components/ui"
+import NextLinkComposed from "@/theme/NextLinkComposed"
+import {
+    Announcement,
+    DateTile,
+    Pill,
+    Split,
+    Tile,
+    AutoGrid,
+    type Tone,
+} from "@/components/ui"
 
 export const metadata: Metadata = { title: "Home" }
 
@@ -35,6 +48,9 @@ const HOMES = [
     },
 ]
 
+// Tile is typed as a Box; spread so it can render as a link.
+const HOME_LINK = { component: NextLinkComposed, href: "/owner/homes" }
+
 const EVENTS = [
     {
         month: "Oct",
@@ -53,122 +69,160 @@ const EVENTS = [
 export default function OwnerHome() {
     return (
         <>
-            <h1 className="h1">Good afternoon, Dana</h1>
+            <Typography variant="h1">Good afternoon, Dana</Typography>
 
-            <div className="grid-cards">
-                <div className="card card-hero">
-                    <div
-                        className="row"
-                        style={{
+            <AutoGrid kind="cards">
+                <Card variant="hero">
+                    <Stack
+                        direction="row"
+                        sx={{
                             justifyContent: "space-between",
                             alignItems: "flex-start",
+                            gap: 1.5,
                         }}
                     >
-                        <div className="stack" style={{ gap: 4 }}>
-                            <span
-                                className="text-md"
-                                style={{ fontWeight: 500, opacity: 0.85 }}
+                        <Stack sx={{ gap: 0.5 }}>
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                sx={{
+                                    fontWeight: "fontWeightMedium",
+                                    opacity: 0.85,
+                                }}
                             >
                                 Due across your 2 homes
-                            </span>
-                            <span className="display" style={{ fontSize: 36 }}>
+                            </Typography>
+                            <Typography variant="h1" component="span">
                                 $570.00
-                            </span>
-                        </div>
+                            </Typography>
+                        </Stack>
                         <Pill tone="amber" large>
                             Due Nov 1
                         </Pill>
-                    </div>
-                    <Link href="/owner/dues" className="btn btn-inverse">
+                    </Stack>
+                    <Button variant="contained" color="inverse" href="/owner/dues">
                         Review and pay
-                    </Link>
-                </div>
+                    </Button>
+                </Card>
 
-                <div className="card card-attention" style={{ gap: 10 }}>
-                    <span
-                        className="text-sm bold"
-                        style={{ color: "var(--amber-fg)" }}
+                <Card variant="attention" sx={{ gap: 1.25 }}>
+                    <Typography
+                        variant="caption"
+                        color="amber.dark"
+                        sx={{ fontWeight: "fontWeightBold" }}
                     >
                         Needs your response
-                    </span>
-                    <span
-                        className="text-lg strong"
-                        style={{ lineHeight: 1.3 }}
-                    >
+                    </Typography>
+                    <Typography variant="h6" component="span">
                         Trash bins visible from the street · 14 Willow Bend Ct
-                    </span>
-                    <span className="text-md muted">Resolve by Oct 23</span>
-                    <Link
-                        href="/owner/violations"
-                        className="strong"
-                        style={{ marginTop: "auto" }}
-                    >
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Resolve by Oct 23
+                    </Typography>
+                    <Link href="/owner/violations" sx={{ mt: "auto" }}>
                         Open notice
                     </Link>
-                </div>
+                </Card>
 
-                <div className="card" style={{ gap: 10 }}>
-                    <span className="text-sm bold muted">
-                        Annual meeting · Nov 12
-                    </span>
-                    <span
-                        className="text-lg strong"
-                        style={{ lineHeight: 1.3 }}
+                <Card sx={{ gap: 1.25 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontWeight: "fontWeightBold" }}
                     >
+                        Annual meeting · Nov 12
+                    </Typography>
+                    <Typography variant="h6" component="span">
                         Vote on the 2027 budget and two board seats
-                    </span>
-                    <div className="row-wrap" style={{ marginTop: "auto" }}>
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-flex"
-                        >
+                    </Typography>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                            gap: 1.25,
+                            mt: "auto",
+                        }}
+                    >
+                        <Button variant="contained" sx={{ flex: 1 }}>
                             Cast vote
-                        </button>
-                        <button type="button" className="btn btn-flex">
-                            Assign proxy
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        </Button>
+                        <Button sx={{ flex: 1 }}>Assign proxy</Button>
+                    </Stack>
+                </Card>
+            </AutoGrid>
 
-            <div className="split">
-                <section className="split-main stack">
-                    <h2 className="h2-lg">Announcements</h2>
-                    {ANNOUNCEMENTS.map((a) => (
-                        <Announcement key={a.title} {...a} />
-                    ))}
-                </section>
-
-                <aside className="split-side stack" style={{ gap: 16 }}>
-                    <section className="card" style={{ padding: 18, gap: 12 }}>
-                        <h2 className="h3">Your homes</h2>
-                        {HOMES.map((h) => (
-                            <Link
-                                key={h.address}
-                                href="/owner/homes"
-                                className="tile"
-                            >
-                                <span className="strong">{h.address}</span>
-                                <span className="text-sm muted">{h.note}</span>
-                            </Link>
+            <Split
+                main={
+                    <Stack component="section" sx={{ gap: 1.5 }}>
+                        <Typography variant="h3" component="h2">
+                            Announcements
+                        </Typography>
+                        {ANNOUNCEMENTS.map((a) => (
+                            <Announcement key={a.title} {...a} />
                         ))}
-                    </section>
-                    <section className="card" style={{ padding: 18, gap: 12 }}>
-                        <h2 className="h3">Coming up</h2>
-                        {EVENTS.map((e) => (
-                            <div className="row" key={e.title}>
-                                <DateTile month={e.month} day={e.day} />
-                                <div className="stack" style={{ gap: 2 }}>
-                                    <span className="strong">{e.title}</span>
-                                    <span className="text-sm muted">
-                                        {e.detail}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </section>
-                </aside>
-            </div>
+                    </Stack>
+                }
+                side={
+                    <Stack component="aside" sx={{ gap: 2 }}>
+                        <Card component="section" sx={{ p: 2.25, gap: 1.5 }}>
+                            <Typography variant="h5" component="h2">
+                                Your homes
+                            </Typography>
+                            {HOMES.map((h) => (
+                                <Tile
+                                    key={h.address}
+                                    {...HOME_LINK}
+                                    sx={{ textDecoration: "none" }}
+                                >
+                                    <Typography
+                                        component="span"
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
+                                        {h.address}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        {h.note}
+                                    </Typography>
+                                </Tile>
+                            ))}
+                        </Card>
+                        <Card component="section" sx={{ p: 2.25, gap: 1.5 }}>
+                            <Typography variant="h5" component="h2">
+                                Coming up
+                            </Typography>
+                            {EVENTS.map((e) => (
+                                <Stack
+                                    key={e.title}
+                                    direction="row"
+                                    sx={{ alignItems: "center", gap: 1.5 }}
+                                >
+                                    <DateTile month={e.month} day={e.day} />
+                                    <Stack sx={{ gap: 0.25 }}>
+                                        <Typography
+                                            component="span"
+                                            sx={{
+                                                fontWeight: "fontWeightSemiBold",
+                                            }}
+                                        >
+                                            {e.title}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary"
+                                        >
+                                            {e.detail}
+                                        </Typography>
+                                    </Stack>
+                                </Stack>
+                            ))}
+                        </Card>
+                    </Stack>
+                }
+            />
         </>
     )
 }

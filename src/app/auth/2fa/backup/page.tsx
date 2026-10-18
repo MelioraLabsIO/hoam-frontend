@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto"
+import Button from "@mui/material/Button"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { redirect } from "next/navigation"
 import { AuthHeader, AuthLayout } from "@/components/auth/AuthLayout"
 import { isDemoMode, PORTAL_HOME, safeNext } from "@/lib/auth/config"
@@ -62,9 +62,9 @@ export default async function BackupCodesPage({
                         ? "Use the codes you saved earlier. Each one works once."
                         : "We couldn't make backup codes right now. Two-factor is still on, and you can make codes later from Account › Security."}
                 </AuthHeader>
-                <Link href={next} className="auth-btn">
+                <Button href={next} variant="contained" size="large">
                     Continue
-                </Link>
+                </Button>
             </AuthLayout>
         )
     }

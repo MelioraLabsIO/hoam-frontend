@@ -1,6 +1,15 @@
 "use client"
 
-import { useRef, useState, type FormEvent } from "react"
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import MenuItem from "@mui/material/MenuItem"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import { visuallyHidden } from "@mui/utils"
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react"
 import { Pill, type Tone } from "@/components/ui"
 
 type Request = {
@@ -41,6 +50,7 @@ const INITIAL_REQUESTS: Request[] = [
 // Submitting isn't wired to Supabase yet; new requests are kept in local state.
 export default function MaintenanceBoard() {
     const [requests, setRequests] = useState(INITIAL_REQUESTS)
+    const [where, setWhere] = useState(LOCATIONS[0])
     const [photos, setPhotos] = useState<string[]>([])
     const [sent, setSent] = useState<number | null>(null)
     const fileRef = useRef<HTMLInputElement>(null)
@@ -70,52 +80,60 @@ export default function MaintenanceBoard() {
         ])
         setSent(id)
         setPhotos([])
+        setWhere(LOCATIONS[0])
         form.reset()
     }
 
     return (
-        <div className="row-wrap" style={{ gap: 16, alignItems: "flex-start" }}>
-            <section
+        <Stack
+            direction="row"
+            sx={{ flexWrap: "wrap", gap: 2, alignItems: "flex-start" }}
+        >
+            <Card
+                component="section"
                 aria-labelledby="new-h"
-                className="card"
-                style={{ flex: "1 1 380px", padding: 22 }}
+                sx={(theme) => ({
+                    flex: `1 1 ${theme.spacing(47.5)}`,
+                    p: 2.75,
+                })}
             >
-                <h2 id="new-h" className="h2">
+                <Typography id="new-h" variant="h4" component="h2">
                     Report an issue
-                </h2>
-                <form className="stack" style={{ gap: 14 }} onSubmit={onSubmit}>
-                    <div className="field">
-                        <label htmlFor="t-where" className="label">
-                            Where is it?
-                        </label>
-                        <select id="t-where" name="where" className="select">
-                            {LOCATIONS.map((l) => (
-                                <option key={l}>{l}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="field">
-                        <label htmlFor="t-desc" className="label">
-                            What&apos;s going on?
-                        </label>
-                        <textarea
-                            id="t-desc"
-                            name="desc"
-                            className="textarea"
-                            rows={4}
-                            required
-                        />
-                    </div>
-                    <input
+                </Typography>
+                <Stack component="form" sx={{ gap: 1.75 }} onSubmit={onSubmit}>
+                    <TextField
+                        select
+                        id="t-where"
+                        name="where"
+                        label="Where is it?"
+                        value={where}
+                        onChange={(e) => setWhere(e.target.value)}
+                    >
+                        {LOCATIONS.map((l) => (
+                            <MenuItem key={l} value={l}>
+                                {l}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <TextField
+                        id="t-desc"
+                        name="desc"
+                        label="What's going on?"
+                        multiline
+                        rows={4}
+                        required
+                    />
+                    <Box
+                        component="input"
                         ref={fileRef}
                         type="file"
                         name="photos"
                         accept="image/*"
                         multiple
-                        className="visually-hidden"
                         tabIndex={-1}
                         aria-hidden="true"
-                        onChange={(e) =>
+                        sx={visuallyHidden}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             setPhotos(
                                 Array.from(e.target.files ?? []).map(
                                     (f) => f.name
@@ -123,69 +141,96 @@ export default function MaintenanceBoard() {
                             )
                         }
                     />
-                    <button
-                        type="button"
+                    <Button
                         onClick={() => fileRef.current?.click()}
-                        style={{
-                            height: 64,
-                            borderRadius: 12,
-                            border: "1px dashed #B6C1CF",
-                            background: "var(--surface-muted)",
-                            color: "var(--muted)",
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: "pointer",
-                        }}
+                        sx={(theme) => ({
+                            minHeight: theme.spacing(8),
+                            borderStyle: "dashed",
+                            borderColor: "border.dashed",
+                            bgcolor: "background.muted",
+                            color: "text.secondary",
+                            typography: "label",
+                            "&:hover": {
+                                borderStyle: "dashed",
+                                bgcolor: "background.muted",
+                            },
+                        })}
                     >
                         {photos.length
                             ? `${photos.length} photo${photos.length > 1 ? "s" : ""} added`
                             : "Add photos"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="submit"
-                        className="btn btn-primary"
-                        style={{ height: 48, fontSize: 16 }}
+                        variant="contained"
+                        sx={(theme) => ({
+                            minHeight: theme.layout.control.lg,
+                            fontSize: theme.typography.subtitle1.fontSize,
+                        })}
                     >
                         Send to management
-                    </button>
+                    </Button>
                     {sent && (
-                        <p className="callout callout-info" role="status">
+                        <Alert severity="info" role="status">
                             Request #{sent} sent. {LANDLORD} was copied.
-                        </p>
+                        </Alert>
                     )}
-                    <p className="text-sm muted" style={{ lineHeight: 1.45 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ lineHeight: 1.45 }}
+                    >
                         Problems inside the home go to your landlord, not the
                         HOA. Changes to the outside of the home need your
                         landlord to request approval.
-                    </p>
-                </form>
-            </section>
+                    </Typography>
+                </Stack>
+            </Card>
 
-            <section
-                className="stack"
-                style={{ flex: "999 1 480px", minWidth: 0 }}
+            <Stack
+                component="section"
+                sx={(theme) => ({
+                    flex: `999 1 ${theme.spacing(60)}`,
+                    minWidth: 0,
+                    gap: 1.5,
+                })}
             >
-                <h2 className="h2">Your requests</h2>
+                <Typography variant="h4" component="h2">
+                    Your requests
+                </Typography>
                 {requests.map((r) => (
-                    <article
+                    <Card
                         key={r.id}
-                        className="card card-tight"
-                        style={{ padding: 18, gap: 8 }}
+                        component="article"
+                        sx={{ p: 2.25, gap: 1 }}
                     >
-                        <div
-                            className="row-wrap"
-                            style={{ justifyContent: "space-between", gap: 8 }}
+                        <Stack
+                            direction="row"
+                            sx={{
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 1,
+                            }}
                         >
-                            <span className="text-sm strong muted">
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
+                            >
                                 #{r.id} · {r.date}
-                            </span>
+                            </Typography>
                             <Pill tone={r.tone}>{r.status}</Pill>
-                        </div>
-                        <span className="text-lg strong">{r.title}</span>
-                        <span className="text-md muted">{r.note}</span>
-                    </article>
+                        </Stack>
+                        <Typography variant="h6" component="p">
+                            {r.title}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {r.note}
+                        </Typography>
+                    </Card>
                 ))}
-            </section>
-        </div>
+            </Stack>
+        </Stack>
     )
 }

@@ -1,7 +1,14 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import IconButton from "@mui/material/IconButton"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
-import { PageHeader } from "@/components/ui"
+import { CalendarBlock, PageHeader, VisuallyHidden } from "@/components/ui"
 import { ChevronLeft, ChevronRight } from "@/components/icons"
 
 type BlockTone = "blue" | "teal" | "gray"
@@ -120,145 +127,157 @@ export default function AmenitiesCalendar() {
                 title="Amenities"
                 actions={
                     <>
-                        <button
-                            type="button"
-                            className="btn btn-icon"
+                        <IconButton
                             aria-label="Previous week"
                             onClick={() => setWeek((w) => w - 1)}
                         >
-                            <ChevronLeft size={18} />
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-icon"
+                            <ChevronLeft fontSize="small" />
+                        </IconButton>
+                        <IconButton
                             aria-label="Next week"
                             onClick={() => setWeek((w) => w + 1)}
                         >
-                            <ChevronRight size={18} />
-                        </button>
-                        <button
-                            type="button"
-                            className="btn"
-                            onClick={() => setNotice("Blocking off time")}
-                        >
+                            <ChevronRight fontSize="small" />
+                        </IconButton>
+                        <Button onClick={() => setNotice("Blocking off time")}>
                             Block off time
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-primary"
+                        </Button>
+                        <Button
+                            variant="contained"
                             onClick={() => setNotice("Adding bookings")}
                         >
                             Add booking
-                        </button>
+                        </Button>
                     </>
                 }
             />
 
             {notice && (
-                <p className="callout callout-info" role="status">
+                <Alert severity="info" role="status">
                     {notice} will be available once amenity bookings are
                     connected.
-                </p>
+                </Alert>
             )}
 
-            <section
-                className="card"
-                style={{ padding: 16 }}
+            <Card
+                component="section"
+                sx={{ p: 2 }}
                 aria-label={`Bookings ${fmt(days[0])} to ${fmt(days[6])}`}
             >
-                <div className="table-wrap">
-                    <div
+                <Box sx={{ position: "relative", overflowX: "auto" }}>
+                    <Box
                         role="table"
-                        style={{
-                            minWidth: 940,
+                        sx={(theme) => ({
+                            minWidth: theme.spacing(117.5),
                             display: "grid",
-                            gridTemplateColumns:
-                                "150px repeat(7, minmax(0, 1fr))",
-                            gap: 6,
-                        }}
+                            gridTemplateColumns: `${theme.spacing(18.75)} repeat(7, minmax(0, 1fr))`,
+                            gap: 0.75,
+                        })}
                     >
-                        <div role="row" style={{ display: "contents" }}>
-                            <div role="columnheader">
-                                <span className="visually-hidden">Amenity</span>
-                            </div>
+                        <Box role="row" sx={{ display: "contents" }}>
+                            <Box role="columnheader">
+                                <VisuallyHidden>Amenity</VisuallyHidden>
+                            </Box>
                             {days.map((d) => (
-                                <div
+                                <Stack
                                     role="columnheader"
                                     key={d.toISOString()}
-                                    className="stack"
-                                    style={{ padding: "6px 4px 10px", gap: 1 }}
-                                >
-                                    <span
-                                        className="bold muted"
-                                        style={{ fontSize: 12 }}
-                                    >
-                                        {DOW[d.getDay()]}
-                                    </span>
-                                    <span
-                                        className="display"
-                                        style={{ fontSize: 18 }}
-                                    >
-                                        {d.getDate()}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                        {AMENITIES.map((a) => (
-                            <div
-                                role="row"
-                                style={{ display: "contents" }}
-                                key={a.name}
-                            >
-                                <div
-                                    role="rowheader"
-                                    className="stack"
-                                    style={{
-                                        padding: "10px 4px",
-                                        gap: 2,
-                                        borderTop: "1px solid var(--divider)",
+                                    sx={{
+                                        pt: 0.75,
+                                        px: 0.5,
+                                        pb: 1.25,
+                                        gap: 0.125,
                                     }}
                                 >
-                                    <span className="text-md strong">
+                                    <Typography
+                                        variant="micro"
+                                        component="span"
+                                        color="text.secondary"
+                                        sx={{ fontWeight: "fontWeightBold" }}
+                                    >
+                                        {DOW[d.getDay()]}
+                                    </Typography>
+                                    <Typography variant="h5" component="span">
+                                        {d.getDate()}
+                                    </Typography>
+                                </Stack>
+                            ))}
+                        </Box>
+                        {AMENITIES.map((a) => (
+                            <Box
+                                role="row"
+                                sx={{ display: "contents" }}
+                                key={a.name}
+                            >
+                                <Stack
+                                    role="rowheader"
+                                    sx={{
+                                        py: 1.25,
+                                        px: 0.5,
+                                        gap: 0.25,
+                                        borderTop: 1,
+                                        borderColor: "divider",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        component="span"
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
                                         {a.name}
-                                    </span>
-                                    <span
-                                        className="muted"
-                                        style={{ fontSize: 12 }}
+                                    </Typography>
+                                    <Typography
+                                        variant="micro"
+                                        component="span"
+                                        color="text.secondary"
+                                        sx={{ fontWeight: "fontWeightRegular" }}
                                     >
                                         {a.hours}
-                                    </span>
-                                </div>
+                                    </Typography>
+                                </Stack>
                                 {days.map((d, i) => (
-                                    <div
+                                    <Stack
                                         role="cell"
                                         key={d.toISOString()}
-                                        className="stack"
-                                        style={{
-                                            minHeight: 76,
-                                            borderTop:
-                                                "1px solid var(--divider)",
-                                            paddingTop: 6,
-                                            gap: 4,
+                                        sx={{
+                                            minHeight: (theme) =>
+                                                theme.spacing(9.5),
+                                            borderTop: 1,
+                                            borderColor: "divider",
+                                            pt: 0.75,
+                                            gap: 0.5,
                                         }}
                                     >
                                         {cellItems(a, i).map((b) => (
-                                            <div
-                                                className={`block block-${b.tone}`}
+                                            <CalendarBlock
+                                                tone={b.tone}
                                                 key={b.time + b.who}
                                             >
-                                                <span className="bold">
+                                                <Typography
+                                                    variant="inherit"
+                                                    component="span"
+                                                    sx={{
+                                                        fontWeight:
+                                                            "fontWeightBold",
+                                                    }}
+                                                >
                                                     {b.time}
-                                                </span>
-                                                <span>{b.who}</span>
-                                            </div>
+                                                </Typography>
+                                                <Typography
+                                                    variant="inherit"
+                                                    component="span"
+                                                >
+                                                    {b.who}
+                                                </Typography>
+                                            </CalendarBlock>
                                         ))}
-                                    </div>
+                                    </Stack>
                                 ))}
-                            </div>
+                            </Box>
                         ))}
-                    </div>
-                </div>
-            </section>
+                    </Box>
+                </Box>
+            </Card>
         </>
     )
 }

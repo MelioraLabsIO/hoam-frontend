@@ -1,7 +1,20 @@
-import Link from "next/link"
+"use client"
+
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Link from "@mui/material/Link"
+import Paper from "@mui/material/Paper"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import type { ReactNode } from "react"
-import { BrandMark } from "@/components/ui"
-import "./auth.css"
+import ColorModeToggle from "@/components/ColorModeToggle"
+import {
+    AlertCircleIcon,
+    CheckIcon,
+    MailIcon,
+    ShieldIcon,
+} from "@/components/icons"
+import { BrandMark, IconTile } from "@/components/ui"
 
 export const COMMUNITY = "Willow Creek"
 
@@ -9,113 +22,164 @@ export const COMMUNITY = "Willow Creek"
 export function AuthLayout({
     children,
     footer,
-    size,
+    size = "sm",
     brandLink = true,
 }: {
     children: ReactNode
     footer?: ReactNode
-    size?: "md" | "lg"
+    size?: "sm" | "md" | "lg"
     brandLink?: boolean
 }) {
     const brand = (
         <>
             <BrandMark />
-            <span className="auth-brand-name">{COMMUNITY}</span>
+            <Typography variant="brandLg" component="span">
+                {COMMUNITY}
+            </Typography>
         </>
     )
+    const brandSx = {
+        display: "flex",
+        alignItems: "center",
+        gap: 1.25,
+        color: "text.primary",
+        displayPrint: "none",
+    }
     return (
-        <div className="auth-page">
+        <Box
+            sx={(theme) => ({
+                minHeight: "100vh",
+                bgcolor: "background.default",
+                px: 2,
+                py: theme.layout.authPagePadding,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 3.5,
+                position: "relative",
+            })}
+        >
+            <Box
+                sx={{
+                    position: { xs: "static", sm: "absolute" },
+                    top: (theme) => theme.spacing(2),
+                    right: (theme) => theme.spacing(2),
+                    displayPrint: "none",
+                }}
+            >
+                <ColorModeToggle />
+            </Box>
             {brandLink ? (
-                <Link href="/auth/login" className="auth-brand auth-print-hide">
+                <Link
+                    href="/auth/login"
+                    sx={{ ...brandSx, "&:hover": { color: "text.primary" } }}
+                >
                     {brand}
                 </Link>
             ) : (
-                <div className="auth-brand auth-print-hide">{brand}</div>
+                <Box sx={brandSx}>{brand}</Box>
             )}
-            <main
-                className={size ? `auth-card auth-card-${size}` : "auth-card"}
+            <Paper
+                component="main"
+                variant="outlined"
+                sx={(theme) => ({
+                    width: 1,
+                    maxWidth: theme.layout.authCard[size],
+                    borderRadius: `${theme.radius.panel}px`,
+                    p: theme.layout.authCardPadding,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: size === "lg" ? 2.75 : 2.5,
+                    "& > *": { minWidth: 0 },
+                })}
             >
                 {children}
-            </main>
-            {footer && <p className="auth-foot auth-print-hide">{footer}</p>}
-        </div>
+            </Paper>
+            {footer && (
+                <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={(theme) => ({
+                        maxWidth: theme.layout.authCard.sm,
+                        textAlign: "center",
+                        lineHeight: 1.5,
+                        displayPrint: "none",
+                    })}
+                >
+                    {footer}
+                </Typography>
+            )}
+        </Box>
     )
 }
 
 export function AuthHeader({
     title,
     children,
+    variant = "h2",
 }: {
     title: ReactNode
     children?: ReactNode
+    variant?: "h1" | "h2"
 }) {
     return (
-        <div className="auth-head">
-            <h1 className="auth-title">{title}</h1>
-            {children && <p className="auth-lead">{children}</p>}
-        </div>
+        <Stack sx={{ gap: 1 }}>
+            <Typography variant={variant} component="h1">
+                {title}
+            </Typography>
+            {children && (
+                <Typography
+                    variant="subtitle1"
+                    color="text.secondary"
+                    sx={{ "& strong": { color: "text.primary" } }}
+                >
+                    {children}
+                </Typography>
+            )}
+        </Stack>
     )
 }
 
 export function AuthAlert({ children }: { children: ReactNode }) {
     return (
-        <div role="alert" className="auth-alert">
-            <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-            >
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 8v5M12 16.5v.01" />
-            </svg>
-            <span>{children}</span>
-        </div>
+        <Alert
+            severity="error"
+            icon={<AlertCircleIcon fontSize="small" />}
+            role="alert"
+        >
+            {children}
+        </Alert>
     )
 }
 
 export function AuthIcon({ kind }: { kind: "mail" | "check" | "shield" }) {
     return (
-        <div className="auth-icon" aria-hidden="true">
-            <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={kind === "check" ? 2.2 : 1.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                {kind === "mail" && (
-                    <>
-                        <rect x="3" y="5" width="18" height="14" rx="2" />
-                        <path d="m3 7 9 6 9-6" />
-                    </>
-                )}
-                {kind === "check" && <path d="m5 12 4.5 4.5L19 7" />}
-                {kind === "shield" && (
-                    <>
-                        <path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z" />
-                        <path d="m9 12 2 2 4-4" />
-                    </>
-                )}
-            </svg>
-        </div>
+        <IconTile>
+            {kind === "mail" && <MailIcon fontSize="large" strokeWidth={1.8} />}
+            {kind === "check" && <CheckIcon fontSize="large" strokeWidth={2.2} />}
+            {kind === "shield" && <ShieldIcon fontSize="large" strokeWidth={1.8} />}
+        </IconTile>
+    )
+}
+
+/** Grey note block, e.g. the demo-mode explanation. */
+export function AuthNote({ children }: { children: ReactNode }) {
+    return (
+        <Alert
+            color="neutral"
+            role="note"
+            sx={{ lineHeight: 1.5, "& strong": { color: "text.primary" } }}
+        >
+            {children}
+        </Alert>
     )
 }
 
 /** Shown on every auth screen while no Supabase project is connected. */
 export function DemoNotice({ children }: { children: ReactNode }) {
     return (
-        <div className="auth-note" role="note">
-            <strong style={{ color: "var(--ink)" }}>Demo mode.</strong>{" "}
-            {children}
-        </div>
+        <AuthNote>
+            <strong>Demo mode.</strong> {children}
+        </AuthNote>
     )
 }

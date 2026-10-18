@@ -1,7 +1,20 @@
 "use client"
 
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
-import { Pill } from "@/components/ui"
+import { StrokeIcon, type IconProps } from "@/components/icons"
+import { Pill, VisuallyHidden } from "@/components/ui"
 
 type FolderId = "all" | "gov" | "min" | "fin" | "forms"
 type Doc = {
@@ -87,6 +100,14 @@ const DOCS: Doc[] = [
     },
 ]
 
+const FolderIcon = (p: IconProps) => (
+    <StrokeIcon strokeWidth={1.8} {...p}>
+        <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </StrokeIcon>
+)
+
+const HEADINGS = ["Name", "Folder", "Visible to", "Updated"]
+
 const folderName = (id: FolderId) =>
     FOLDERS.find((f) => f.id === id)?.name ?? ""
 
@@ -96,15 +117,14 @@ export default function DocumentsLibrary() {
 
     return (
         <>
-            <div
+            <Box
                 role="group"
                 aria-label="Folders"
-                style={{
+                sx={(theme) => ({
                     display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
-                    gap: 12,
-                }}
+                    gridTemplateColumns: `repeat(auto-fit, minmax(min(${theme.spacing(25)}, 100%), 1fr))`,
+                    gap: 1.5,
+                })}
             >
                 {FOLDERS.map((f) => {
                     const n =
@@ -113,144 +133,149 @@ export default function DocumentsLibrary() {
                             : DOCS.filter((d) => d.folder === f.id).length
                     const sel = f.id === folder
                     return (
-                        <button
-                            type="button"
+                        <Button
                             key={f.id}
                             aria-pressed={sel}
                             onClick={() => setFolder(f.id)}
-                            style={{
-                                minHeight: 88,
-                                textAlign: "left",
-                                padding: 16,
-                                borderRadius: 16,
-                                border: sel
-                                    ? "2px solid var(--primary)"
-                                    : "1px solid var(--border)",
-                                background: sel
-                                    ? "var(--surface-sunken)"
-                                    : "var(--surface)",
-                                color: "var(--ink)",
-                                display: "flex",
+                            sx={(theme) => ({
+                                minHeight: theme.spacing(11),
+                                p: 2,
+                                borderRadius: `${theme.radius.xl}px`,
                                 flexDirection: "column",
-                                gap: 10,
-                                cursor: "pointer",
-                            }}
+                                alignItems: "flex-start",
+                                justifyContent: "flex-start",
+                                gap: 1.25,
+                                textAlign: "left",
+                                whiteSpace: "normal",
+                                borderColor: "border.main",
+                                ...(sel && {
+                                    borderWidth: 2,
+                                    borderColor: "primary.main",
+                                    bgcolor: "background.sunken",
+                                    "&:hover": {
+                                        borderColor: "primary.main",
+                                        bgcolor: "background.sunken",
+                                    },
+                                }),
+                            })}
                         >
-                            <svg
-                                width="22"
-                                height="22"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke={sel ? "var(--primary)" : "var(--muted)"}
-                                strokeWidth="1.8"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                aria-hidden="true"
-                            >
-                                <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                            </svg>
-                            <span className="stack" style={{ gap: 2 }}>
-                                <span
-                                    className="strong"
-                                    style={{ fontSize: 15 }}
+                            <FolderIcon
+                                sx={{
+                                    color: sel
+                                        ? "primary.main"
+                                        : "text.secondary",
+                                }}
+                            />
+                            <Stack component="span" sx={{ gap: 0.25 }}>
+                                <Typography
+                                    variant="body1"
+                                    component="span"
+                                    sx={{ fontWeight: "fontWeightSemiBold" }}
                                 >
                                     {f.name}
-                                </span>
-                                <span className="text-sm muted">
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    component="span"
+                                    color="text.secondary"
+                                >
                                     {n} {n === 1 ? "file" : "files"}
-                                </span>
-                            </span>
-                        </button>
+                                </Typography>
+                            </Stack>
+                        </Button>
                     )
                 })}
-            </div>
+            </Box>
 
-            <section
-                className="card"
-                style={{ padding: "8px 20px 12px" }}
+            <Card
+                component="section"
+                sx={{ pt: 1, px: 2.5, pb: 1.5 }}
                 aria-label={folderName(folder)}
             >
-                <div className="table-wrap">
-                    <table className="table" style={{ minWidth: 680 }}>
-                        <thead>
-                            <tr>
-                                <th style={{ paddingTop: 14 }}>Name</th>
-                                <th style={{ paddingTop: 14 }}>Folder</th>
-                                <th style={{ paddingTop: 14 }}>Visible to</th>
-                                <th style={{ paddingTop: 14 }}>Updated</th>
-                                <th style={{ paddingTop: 14 }}>
-                                    <span className="visually-hidden">
-                                        Actions
-                                    </span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <TableContainer>
+                    <Table sx={(theme) => ({ minWidth: theme.spacing(85) })}>
+                        <TableHead>
+                            <TableRow>
+                                {HEADINGS.map((h) => (
+                                    <TableCell key={h} sx={{ pt: 1.75 }}>
+                                        {h}
+                                    </TableCell>
+                                ))}
+                                <TableCell sx={{ pt: 1.75 }}>
+                                    <VisuallyHidden>Actions</VisuallyHidden>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
                             {files.map((d) => (
-                                <tr key={d.name}>
-                                    <td>
-                                        <div
-                                            className="row"
-                                            style={{ gap: 10 }}
+                                <TableRow key={d.name}>
+                                    <TableCell>
+                                        <Stack
+                                            direction="row"
+                                            sx={{
+                                                alignItems: "center",
+                                                gap: 1.25,
+                                            }}
                                         >
-                                            <span
-                                                style={{
-                                                    width: 34,
-                                                    height: 40,
+                                            <Typography
+                                                variant="tiny"
+                                                component="span"
+                                                sx={(theme) => ({
+                                                    width: theme.spacing(4.25),
+                                                    height: theme.spacing(5),
                                                     flex: "0 0 auto",
-                                                    borderRadius: 6,
-                                                    background:
-                                                        "var(--gray-bg)",
-                                                    color: "var(--gray-fg)",
-                                                    fontSize: 10,
-                                                    fontWeight: 700,
+                                                    borderRadius: `${theme.radius.xs}px`,
+                                                    bgcolor: "neutral.soft",
+                                                    color: "neutral.softContrast",
                                                     display: "flex",
                                                     alignItems: "flex-end",
                                                     justifyContent: "center",
-                                                    paddingBottom: 6,
-                                                }}
+                                                    pb: 0.75,
+                                                })}
                                             >
                                                 {d.ext}
-                                            </span>
-                                            <span className="strong">
+                                            </Typography>
+                                            <Typography
+                                                variant="inherit"
+                                                component="span"
+                                                sx={{
+                                                    fontWeight:
+                                                        "fontWeightSemiBold",
+                                                }}
+                                            >
                                                 {d.name}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="muted">
+                                            </Typography>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell sx={{ color: "text.secondary" }}>
                                         {folderName(d.folder)}
-                                    </td>
-                                    <td>
+                                    </TableCell>
+                                    <TableCell>
                                         <Pill tone={d.board ? "amber" : "blue"}>
                                             {d.board
                                                 ? "Board only"
                                                 : "All residents"}
                                         </Pill>
-                                    </td>
-                                    <td className="muted">{d.updated}</td>
-                                    <td style={{ textAlign: "right" }}>
-                                        <button
+                                    </TableCell>
+                                    <TableCell sx={{ color: "text.secondary" }}>
+                                        {d.updated}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Link
+                                            component="button"
                                             type="button"
+                                            variant="label"
                                             aria-label={`Download ${d.name}`}
-                                            style={{
-                                                padding: 0,
-                                                border: "none",
-                                                background: "none",
-                                                color: "var(--primary)",
-                                                font: "inherit",
-                                                fontWeight: 600,
-                                                cursor: "pointer",
-                                            }}
                                         >
                                             Download
-                                        </button>
-                                    </td>
-                                </tr>
+                                        </Link>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Card>
         </>
     )
 }

@@ -1,18 +1,11 @@
 import type { Metadata } from "next"
-import { KeyValue, Pill, type Tone } from "@/components/ui"
 import AmenitiesCalendar from "./AmenitiesCalendar"
+import AmenityRules, { type AmenityRule } from "./AmenityRules"
 
 export const metadata: Metadata = { title: "Amenities" }
 
 // Placeholder data until the Supabase tables exist.
-const RULES: {
-    name: string
-    status: string
-    tone: Tone
-    capacity: string
-    max: string
-    deposit: string
-}[] = [
+const RULES: AmenityRule[] = [
     {
         name: "Clubhouse",
         status: "Open",
@@ -52,50 +45,7 @@ export default function ManagerAmenities() {
         <>
             <AmenitiesCalendar />
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(min(240px, 100%), 1fr))",
-                    gap: 16,
-                }}
-            >
-                {RULES.map((r) => (
-                    <section
-                        className="card card-tight"
-                        style={{ padding: 18 }}
-                        key={r.name}
-                    >
-                        <div
-                            className="row"
-                            style={{ justifyContent: "space-between", gap: 8 }}
-                        >
-                            <h2 className="h3">{r.name}</h2>
-                            <Pill tone={r.tone}>{r.status}</Pill>
-                        </div>
-                        <div className="stack" style={{ gap: 6 }}>
-                            <KeyValue label="Capacity" value={r.capacity} />
-                            <KeyValue label="Max per booking" value={r.max} />
-                            <KeyValue label="Deposit" value={r.deposit} />
-                        </div>
-                        <button
-                            type="button"
-                            className="link-strong"
-                            aria-label={`Edit rules for ${r.name}`}
-                            style={{
-                                alignSelf: "flex-start",
-                                padding: 0,
-                                border: "none",
-                                background: "none",
-                                color: "var(--primary)",
-                                cursor: "pointer",
-                            }}
-                        >
-                            Edit rules
-                        </button>
-                    </section>
-                ))}
-            </div>
+            <AmenityRules rules={RULES} />
         </>
     )
 }

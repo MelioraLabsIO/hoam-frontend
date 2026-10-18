@@ -1,5 +1,9 @@
+import Card from "@mui/material/Card"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import type { Metadata } from "next"
-import Link from "next/link"
+import { Split, Tile } from "@/components/ui"
 import BookingPicker from "./BookingPicker"
 
 export const metadata: Metadata = { title: "Book an amenity" }
@@ -12,46 +16,59 @@ const MY_BOOKINGS = [
 export default function OwnerAmenities() {
     return (
         <>
-            <h1 className="h1">Book an amenity</h1>
+            <Typography variant="h1">Book an amenity</Typography>
 
-            <div className="split">
-                <BookingPicker />
-
-                <aside className="split-side stack" style={{ gap: 16 }}>
-                    <section className="card" style={{ padding: 18, gap: 12 }}>
-                        <h2 className="h3">My bookings</h2>
-                        {MY_BOOKINGS.map((b) => (
-                            <div
-                                key={b.title + b.when}
-                                className="tile"
-                                style={{
-                                    background: "var(--blue-bg)",
-                                    color: "var(--blue-fg)",
-                                }}
+            <Split
+                main={<BookingPicker />}
+                side={
+                    <Stack component="aside" sx={{ gap: 2 }}>
+                        <Card component="section" sx={{ p: 2.25, gap: 1.5 }}>
+                            <Typography variant="h5" component="h2">
+                                My bookings
+                            </Typography>
+                            {MY_BOOKINGS.map((b) => (
+                                <Tile
+                                    key={b.title + b.when}
+                                    sx={{
+                                        bgcolor: "blue.soft",
+                                        color: "blue.softContrast",
+                                    }}
+                                >
+                                    <Typography
+                                        component="span"
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
+                                        {b.title}
+                                    </Typography>
+                                    <Typography variant="caption">
+                                        {b.when}
+                                    </Typography>
+                                </Tile>
+                            ))}
+                            <Link href="#" variant="label">
+                                Past bookings
+                            </Link>
+                        </Card>
+                        <Card component="section" sx={{ p: 2.25, gap: 1 }}>
+                            <Typography variant="h5" component="h2">
+                                Your tenant
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                component="span"
+                                color="text.secondary"
                             >
-                                <span className="strong">{b.title}</span>
-                                <span className="text-sm">{b.when}</span>
-                            </div>
-                        ))}
-                        <a href="#" className="link-strong">
-                            Past bookings
-                        </a>
-                    </section>
-                    <section className="card" style={{ padding: 18, gap: 8 }}>
-                        <h2 className="h3">Your tenant</h2>
-                        <span
-                            className="text-md muted"
-                            style={{ lineHeight: 1.45 }}
-                        >
-                            Jordan Lee at 9 Heron Way can book amenities. Their
-                            bookings count toward that home&apos;s limits.
-                        </span>
-                        <Link href="/owner/homes" className="link-strong">
-                            Change tenant access
-                        </Link>
-                    </section>
-                </aside>
-            </div>
+                                Jordan Lee at 9 Heron Way can book amenities.
+                                Their bookings count toward that home&apos;s
+                                limits.
+                            </Typography>
+                            <Link href="/owner/homes" variant="label">
+                                Change tenant access
+                            </Link>
+                        </Card>
+                    </Stack>
+                }
+            />
         </>
     )
 }

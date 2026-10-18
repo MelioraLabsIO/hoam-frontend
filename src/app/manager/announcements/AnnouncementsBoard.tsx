@@ -1,6 +1,23 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Checkbox from "@mui/material/Checkbox"
+import FormControl from "@mui/material/FormControl"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import FormGroup from "@mui/material/FormGroup"
+import FormLabel from "@mui/material/FormLabel"
+import Link from "@mui/material/Link"
+import MenuItem from "@mui/material/MenuItem"
+import Radio from "@mui/material/Radio"
+import RadioGroup from "@mui/material/RadioGroup"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import type { Theme } from "@mui/material/styles"
+import { useState, type FormEvent, type ReactNode } from "react"
 import { Pill, type Tone } from "@/components/ui"
 
 type Status = "pinned" | "scheduled" | "sent" | "draft"
@@ -85,19 +102,39 @@ function statusPill(p: Post): { label: string; tone: Tone } {
     }
 }
 
-const linkButton = {
-    padding: 0,
-    border: "none",
-    background: "none",
-    color: "var(--primary)",
-    font: "inherit",
-    fontWeight: 600,
-    cursor: "pointer",
-} as const
+const AUDIENCES = [
+    "All residents",
+    "Owners only",
+    "Renters only",
+    "One street…",
+]
+
+/** Compact check/radio row (36px tall, 15px label). */
+const optionSx = (theme: Theme) => ({
+    minHeight: theme.layout.control.sm,
+    "& .MuiFormControlLabel-label": theme.typography.body1,
+})
+
+/** Text-style action in a post footer. */
+function ActionLink({
+    onClick,
+    children,
+}: {
+    onClick: () => void
+    children: ReactNode
+}) {
+    return (
+        <Link component="button" type="button" variant="caption" onClick={onClick}>
+            {children}
+        </Link>
+    )
+}
 
 export default function AnnouncementsBoard() {
     const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS)
     const [notice, setNotice] = useState<string | null>(null)
+    // Bumped after each submit to remount (reset) the uncontrolled form.
+    const [formKey, setFormKey] = useState(0)
 
     const sorted = [...posts].sort(
         (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
@@ -161,26 +198,49 @@ export default function AnnouncementsBoard() {
                 ? `Saved “${title}” as a draft.`
                 : `“${title}” added to the feed. Delivery starts once announcements are connected.`
         )
-        form.reset()
+        setFormKey((k) => k + 1)
     }
 
     return (
-        <div className="split">
-            <section
-                className="split-main stack"
+        <Box
+            sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                alignItems: "flex-start",
+            }}
+        >
+            <Stack
+                component="section"
                 aria-label="Posted and scheduled announcements"
+                sx={(theme) => ({
+                    flex: `999 1 ${theme.layout.split.main}px`,
+                    minWidth: 0,
+                    gap: 1.5,
+                })}
             >
                 {sorted.map((p) => {
                     const pill = statusPill(p)
                     return (
-                        <article
-                            className="card card-tight"
-                            style={{ padding: 18, gap: 8 }}
+                        <Card
+                            component="article"
+                            sx={{ p: 2.25, gap: 1 }}
                             key={p.id}
                         >
-                            <div className="row-wrap" style={{ gap: 8 }}>
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    flexWrap: "wrap",
+                                    alignItems: "center",
+                                    gap: 1,
+                                }}
+                            >
                                 <Pill tone={pill.tone}>{pill.label}</Pill>
-                                <span className="text-sm muted">
+                                <Typography
+                                    variant="caption"
+                                    component="span"
+                                    color="text.secondary"
+                                >
                                     {[
                                         p.audience,
                                         p.status === "scheduled"
@@ -190,34 +250,38 @@ export default function AnnouncementsBoard() {
                                     ]
                                         .filter(Boolean)
                                         .join(" · ")}
-                                </span>
-                            </div>
-                            <h2
-                                className="text-lg strong"
-                                style={{ margin: 0 }}
-                            >
+                                </Typography>
+                            </Stack>
+                            <Typography variant="h6" component="h2">
                                 {p.title}
-                            </h2>
+                            </Typography>
                             {p.body && (
-                                <p
-                                    className="text-md muted"
-                                    style={{ lineHeight: 1.45 }}
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
                                 >
                                     {p.body}
-                                </p>
+                                </Typography>
                             )}
-                            <div
-                                className="row-wrap text-sm muted"
-                                style={{ gap: 16, paddingTop: 4 }}
+                            <Stack
+                                direction="row"
+                                sx={{
+                                    flexWrap: "wrap",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    pt: 0.5,
+                                }}
                             >
                                 {p.seen !== undefined && (
-                                    <span>
+                                    <Typography
+                                        variant="caption"
+                                        component="span"
+                                        color="text.secondary"
+                                    >
                                         Seen by {p.seen} of {RESIDENTS}
-                                    </span>
+                                    </Typography>
                                 )}
-                                <button
-                                    type="button"
-                                    style={linkButton}
+                                <ActionLink
                                     onClick={() =>
                                         setNotice(
                                             `Editing “${p.title}” is coming soon.`
@@ -225,23 +289,19 @@ export default function AnnouncementsBoard() {
                                     }
                                 >
                                     Edit
-                                </button>
+                                </ActionLink>
                                 {p.status === "pinned" && (
-                                    <button
-                                        type="button"
-                                        style={linkButton}
+                                    <ActionLink
                                         onClick={() =>
                                             update(p.id, { status: "sent" })
                                         }
                                     >
                                         Unpin
-                                    </button>
+                                    </ActionLink>
                                 )}
                                 {(p.status === "scheduled" ||
                                     p.status === "draft") && (
-                                    <button
-                                        type="button"
-                                        style={linkButton}
+                                    <ActionLink
                                         onClick={() =>
                                             update(p.id, {
                                                 status: "sent",
@@ -251,155 +311,133 @@ export default function AnnouncementsBoard() {
                                         }
                                     >
                                         Send now
-                                    </button>
+                                    </ActionLink>
                                 )}
-                            </div>
-                        </article>
+                            </Stack>
+                        </Card>
                     )
                 })}
-            </section>
+            </Stack>
 
-            <section
+            <Card
+                component="section"
                 aria-labelledby="compose-h"
-                className="card split-side"
-                style={{ padding: 22, gap: 16, flexBasis: 360 }}
+                sx={(theme) => ({
+                    p: 2.75,
+                    gap: 2,
+                    flex: `1 1 ${theme.spacing(45)}`,
+                    minWidth: 0,
+                })}
             >
-                <h2 id="compose-h" className="h2">
+                <Typography id="compose-h" variant="h4" component="h2">
                     New announcement
-                </h2>
-                <form className="stack" style={{ gap: 16 }} onSubmit={onSubmit}>
-                    <div className="field">
-                        <label htmlFor="a-title" className="label">
-                            Title
-                        </label>
-                        <input
-                            id="a-title"
-                            name="title"
-                            type="text"
-                            className="input"
-                            placeholder="e.g. Gate codes changing Nov 4"
-                            required
-                        />
-                    </div>
-                    <div className="field">
-                        <label htmlFor="a-body" className="label">
-                            Message
-                        </label>
-                        <textarea
-                            id="a-body"
-                            name="body"
-                            rows={5}
-                            className="textarea"
-                        />
-                    </div>
-                    <div className="field">
-                        <label htmlFor="a-aud" className="label">
-                            Audience
-                        </label>
-                        <select id="a-aud" name="audience" className="select">
-                            <option>All residents</option>
-                            <option>Owners only</option>
-                            <option>Renters only</option>
-                            <option>One street…</option>
-                        </select>
-                    </div>
-                    <fieldset
-                        className="stack"
-                        style={{
-                            margin: 0,
-                            padding: 0,
-                            border: "none",
-                            gap: 0,
-                        }}
+                </Typography>
+                <Stack
+                    component="form"
+                    key={formKey}
+                    sx={{ gap: 2 }}
+                    onSubmit={onSubmit}
+                >
+                    <TextField
+                        id="a-title"
+                        name="title"
+                        label="Title"
+                        placeholder="e.g. Gate codes changing Nov 4"
+                        slotProps={{ htmlInput: { required: true } }}
+                    />
+                    <TextField
+                        id="a-body"
+                        name="body"
+                        label="Message"
+                        multiline
+                        rows={5}
+                    />
+                    <TextField
+                        id="a-aud"
+                        name="audience"
+                        label="Audience"
+                        select
+                        defaultValue={AUDIENCES[0]}
                     >
-                        <legend
-                            className="label"
-                            style={{ padding: "0 0 6px" }}
-                        >
+                        {AUDIENCES.map((a) => (
+                            <MenuItem key={a} value={a}>
+                                {a}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    <FormControl component="fieldset">
+                        <FormLabel component="legend" sx={{ pb: 0.75 }}>
                             Also send by
-                        </legend>
-                        <label
-                            className="check"
-                            style={{ minHeight: 36, fontSize: 15 }}
-                        >
-                            <input type="checkbox" name="push" defaultChecked />
-                            Push notification
-                        </label>
-                        <label
-                            className="check"
-                            style={{ minHeight: 36, fontSize: 15 }}
-                        >
-                            <input type="checkbox" name="email" />
-                            Email
-                        </label>
-                        <label
-                            className="check"
-                            style={{ minHeight: 36, fontSize: 15 }}
-                        >
-                            <input type="checkbox" name="pin" />
-                            Pin to top of the feed
-                        </label>
-                    </fieldset>
-                    <fieldset
-                        className="stack"
-                        style={{
-                            margin: 0,
-                            padding: 0,
-                            border: "none",
-                            gap: 0,
-                        }}
-                    >
-                        <legend
-                            className="label"
-                            style={{ padding: "0 0 6px" }}
-                        >
-                            When
-                        </legend>
-                        <label
-                            className="check"
-                            style={{ minHeight: 36, fontSize: 15 }}
-                        >
-                            <input
-                                type="radio"
-                                name="when"
-                                value="now"
-                                defaultChecked
+                        </FormLabel>
+                        <FormGroup>
+                            <FormControlLabel
+                                sx={optionSx}
+                                control={<Checkbox name="push" defaultChecked />}
+                                label="Push notification"
                             />
-                            Post now
-                        </label>
-                        <label
-                            className="check"
-                            style={{ minHeight: 36, fontSize: 15 }}
-                        >
-                            <input type="radio" name="when" value="later" />
-                            Schedule for later
-                        </label>
-                    </fieldset>
-                    <div className="row" style={{ gap: 10 }}>
-                        <button
+                            <FormControlLabel
+                                sx={optionSx}
+                                control={<Checkbox name="email" />}
+                                label="Email"
+                            />
+                            <FormControlLabel
+                                sx={optionSx}
+                                control={<Checkbox name="pin" />}
+                                label="Pin to top of the feed"
+                            />
+                        </FormGroup>
+                    </FormControl>
+                    <FormControl component="fieldset">
+                        <FormLabel component="legend" sx={{ pb: 0.75 }}>
+                            When
+                        </FormLabel>
+                        <RadioGroup name="when" defaultValue="now">
+                            <FormControlLabel
+                                sx={optionSx}
+                                value="now"
+                                control={<Radio />}
+                                label="Post now"
+                            />
+                            <FormControlLabel
+                                sx={optionSx}
+                                value="later"
+                                control={<Radio />}
+                                label="Schedule for later"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                    <Stack direction="row" sx={{ alignItems: "center", gap: 1.25 }}>
+                        <Button
                             type="submit"
                             name="intent"
                             value="draft"
-                            className="btn btn-flex"
+                            sx={(theme) => ({
+                                flex: 1,
+                                minWidth: theme.spacing(15),
+                            })}
                         >
                             Save draft
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
                             name="intent"
                             value="post"
-                            className="btn btn-primary btn-flex"
+                            variant="contained"
+                            sx={(theme) => ({
+                                flex: 1,
+                                minWidth: theme.spacing(15),
+                            })}
                         >
                             Post
-                        </button>
-                    </div>
+                        </Button>
+                    </Stack>
                     {notice && (
-                        <p className="callout callout-info" role="status">
+                        <Alert severity="info" role="status">
                             {notice}
-                        </p>
+                        </Alert>
                     )}
-                </form>
-            </section>
-        </div>
+                </Stack>
+            </Card>
+        </Box>
     )
 }

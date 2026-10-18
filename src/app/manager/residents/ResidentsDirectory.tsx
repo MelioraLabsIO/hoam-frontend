@@ -1,5 +1,20 @@
 "use client"
 
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import InputAdornment from "@mui/material/InputAdornment"
+import Stack from "@mui/material/Stack"
+import type { Theme } from "@mui/material/styles"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import TextField from "@mui/material/TextField"
+import ToggleButton from "@mui/material/ToggleButton"
+import Typography from "@mui/material/Typography"
+import { visuallyHidden } from "@mui/utils"
 import { useState } from "react"
 import { SearchIcon } from "@/components/icons"
 import { Pill } from "@/components/ui"
@@ -112,6 +127,26 @@ const FILTERS: {
     { id: "rent", label: "Renters", test: (h) => h.type === "Renter" },
 ]
 
+/** White bordered pill that turns dark when pressed. */
+const filterChipSx = (theme: Theme) => ({
+    minHeight: theme.layout.tapTarget,
+    borderRadius: `${theme.radius.pill}px`,
+    border: 1,
+    borderColor: "border.input",
+    bgcolor: "background.paper",
+    color: "text.primary",
+    "&:hover": { bgcolor: "background.paper", borderColor: "border.strong" },
+    "&.Mui-selected, &.Mui-selected:hover": { borderColor: "nav.main" },
+})
+
+const pagerSx = (theme: Theme) => ({
+    borderRadius: `${theme.radius.sm}px`,
+    fontSize: theme.typography.body2.fontSize,
+    px: 1.75,
+})
+
+const HEADERS = ["Home", "Residents", "Type", "Balance", "Autopay", "App"]
+
 function Balance({ h }: { h: Household }) {
     if (h.due === 0) return <Pill tone="blue">Paid up</Pill>
     const amount = `$${h.due.toFixed(2)}`
@@ -136,148 +171,142 @@ export default function ResidentsDirectory() {
 
     return (
         <>
-            <div className="row-wrap" style={{ gap: 12 }}>
-                <div
-                    className="search"
-                    style={{ flex: "1 1 280px", maxWidth: 420 }}
-                >
-                    <label htmlFor="res-search" className="visually-hidden">
-                        Search households
-                    </label>
-                    <SearchIcon size={18} />
-                    <input
-                        id="res-search"
-                        type="search"
-                        className="input"
-                        style={{ borderRadius: 12 }}
-                        placeholder="Search name, address or email"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
-                </div>
-                <div
+            <Stack
+                direction="row"
+                sx={{ flexWrap: "wrap", alignItems: "center", gap: 1.5 }}
+            >
+                <TextField
+                    id="res-search"
+                    type="search"
+                    label="Search households"
+                    placeholder="Search name, address or email"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    sx={(theme) => ({
+                        flex: `1 1 ${theme.spacing(35)}`,
+                        maxWidth: theme.spacing(52.5),
+                    })}
+                    slotProps={{
+                        inputLabel: { sx: visuallyHidden },
+                        input: {
+                            sx: (theme) => ({
+                                borderRadius: `${theme.radius.md}px`,
+                            }),
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon fontSize="small" />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
+                <Stack
+                    direction="row"
                     role="group"
                     aria-label="Filter"
-                    className="row-wrap"
-                    style={{ gap: 8 }}
+                    sx={{ flexWrap: "wrap", alignItems: "center", gap: 1 }}
                 >
-                    {FILTERS.map((f) => {
-                        const on = f.id === current.id
-                        return (
-                            <button
-                                key={f.id}
-                                type="button"
-                                className="btn"
-                                aria-pressed={on}
-                                onClick={() => setFilter(f.id)}
-                                style={{
-                                    borderRadius: 22,
-                                    padding: "0 14px",
-                                    fontSize: 14,
-                                    ...(on
-                                        ? {
-                                              background: "var(--nav-bg)",
-                                              borderColor: "var(--nav-bg)",
-                                              color: "#fff",
-                                          }
-                                        : null),
-                                }}
-                            >
-                                {f.label}
-                            </button>
-                        )
-                    })}
-                </div>
-            </div>
+                    {FILTERS.map((f) => (
+                        <ToggleButton
+                            key={f.id}
+                            value={f.id}
+                            color="nav"
+                            selected={f.id === current.id}
+                            onChange={() => setFilter(f.id)}
+                            sx={filterChipSx}
+                        >
+                            {f.label}
+                        </ToggleButton>
+                    ))}
+                </Stack>
+            </Stack>
 
-            <section
-                className="card"
-                style={{ padding: "8px 20px 12px", gap: 0 }}
-            >
-                <div className="table-wrap">
-                    <table className="table" style={{ minWidth: 760 }}>
-                        <thead>
-                            <tr>
-                                <th style={{ paddingTop: 14 }}>Home</th>
-                                <th style={{ paddingTop: 14 }}>Residents</th>
-                                <th style={{ paddingTop: 14 }}>Type</th>
-                                <th style={{ paddingTop: 14 }}>Balance</th>
-                                <th style={{ paddingTop: 14 }}>Autopay</th>
-                                <th style={{ paddingTop: 14 }}>App</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <Card component="section" sx={{ pt: 1, px: 2.5, pb: 1.5, gap: 0 }}>
+                <TableContainer>
+                    <Table sx={(theme) => ({ minWidth: theme.spacing(95) })}>
+                        <TableHead>
+                            <TableRow>
+                                {HEADERS.map((h) => (
+                                    <TableCell key={h} sx={{ pt: 1.75 }}>
+                                        {h}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
                             {rows.map((h) => (
-                                <tr key={h.home}>
-                                    <td className="strong">{h.home}</td>
-                                    <td>
-                                        <div
-                                            className="stack"
-                                            style={{ gap: 2 }}
-                                        >
-                                            <span>{h.names}</span>
-                                            <span className="text-sm muted">
+                                <TableRow key={h.home}>
+                                    <TableCell
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
+                                        {h.home}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Stack sx={{ gap: 0.25 }}>
+                                            <Typography
+                                                variant="inherit"
+                                                component="span"
+                                            >
+                                                {h.names}
+                                            </Typography>
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
                                                 {h.email}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="muted">{h.type}</td>
-                                    <td>
+                                            </Typography>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell sx={{ color: "text.secondary" }}>
+                                        {h.type}
+                                    </TableCell>
+                                    <TableCell>
                                         <Balance h={h} />
-                                    </td>
-                                    <td className="muted">
+                                    </TableCell>
+                                    <TableCell sx={{ color: "text.secondary" }}>
                                         {h.autopay ? "On" : "Off"}
-                                    </td>
-                                    <td className="muted">{h.app}</td>
-                                </tr>
+                                    </TableCell>
+                                    <TableCell sx={{ color: "text.secondary" }}>
+                                        {h.app}
+                                    </TableCell>
+                                </TableRow>
                             ))}
                             {rows.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} className="muted">
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={6}
+                                        sx={{ color: "text.secondary" }}
+                                    >
                                         No households match.
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             )}
-                        </tbody>
-                    </table>
-                </div>
-                <div
-                    className="row-wrap text-md muted"
-                    style={{
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Stack
+                    direction="row"
+                    sx={{
+                        flexWrap: "wrap",
+                        alignItems: "center",
                         justifyContent: "space-between",
-                        gap: 12,
-                        paddingTop: 12,
+                        gap: 1.5,
+                        pt: 1.5,
                     }}
                 >
-                    <span role="status">
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        role="status"
+                    >
                         Showing {rows.length} of {TOTAL_HOMES} homes
-                    </span>
-                    <div className="row" style={{ gap: 8 }}>
-                        <button
-                            type="button"
-                            className="btn"
-                            style={{
-                                borderRadius: 10,
-                                fontSize: 14,
-                                padding: "0 14px",
-                            }}
-                        >
-                            Previous
-                        </button>
-                        <button
-                            type="button"
-                            className="btn"
-                            style={{
-                                borderRadius: 10,
-                                fontSize: 14,
-                                padding: "0 14px",
-                            }}
-                        >
-                            Next
-                        </button>
-                    </div>
-                </div>
-            </section>
+                    </Typography>
+                    <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
+                        <Button sx={pagerSx}>Previous</Button>
+                        <Button sx={pagerSx}>Next</Button>
+                    </Stack>
+                </Stack>
+            </Card>
         </>
     )
 }

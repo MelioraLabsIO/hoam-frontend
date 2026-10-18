@@ -1,5 +1,11 @@
 "use client"
 
+import Button from "@mui/material/Button"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { useActionState, useState, useTransition } from "react"
 import {
     AuthAlert,
@@ -86,7 +92,7 @@ export default function TwoFactorForm({
     const error = smsError ?? state?.error
 
     return (
-        <form action={action} className="auth-form" style={{ gap: 20 }}>
+        <Stack component="form" action={action} sx={{ gap: 2.5 }}>
             <AuthIcon kind="shield" />
             <AuthHeader title={cur.title}>
                 {method === "sms" && sending
@@ -96,59 +102,86 @@ export default function TwoFactorForm({
             {error && <AuthAlert>{error}</AuthAlert>}
             <input type="hidden" name="method" value={method} />
             <input type="hidden" name="next" value={next} />
-            <div className="field">
-                <label htmlFor="tf-code" className="label">
-                    {cur.label}
-                </label>
-                <input
-                    key={method}
-                    id="tf-code"
-                    name="code"
-                    type="text"
-                    inputMode={cur.numeric ? "numeric" : "text"}
-                    autoComplete="one-time-code"
-                    maxLength={cur.maxLength}
-                    placeholder={cur.placeholder}
-                    required
-                    autoFocus
-                    className={
-                        method === "backup"
-                            ? "auth-input auth-code auth-code-long"
-                            : "auth-input auth-code"
-                    }
-                />
-            </div>
-            <label className="auth-check">
-                <input type="checkbox" name="trust" />
-                Don&apos;t ask again on this device for 30 days
-            </label>
-            <button type="submit" className="auth-btn" disabled={pending}>
+            <TextField
+                key={method}
+                id="tf-code"
+                name="code"
+                type="text"
+                label={cur.label}
+                autoComplete="one-time-code"
+                placeholder={cur.placeholder}
+                autoFocus
+                size="medium"
+                sx={(theme) => ({
+                    "& .MuiOutlinedInput-root": {
+                        minHeight: theme.layout.control.code,
+                    },
+                })}
+                slotProps={{
+                    htmlInput: {
+                        required: true,
+                        inputMode: cur.numeric ? "numeric" : "text",
+                        maxLength: cur.maxLength,
+                        sx: {
+                            typography:
+                                method === "backup" ? "codeLg" : "code",
+                            px: 2,
+                        },
+                    },
+                }}
+            />
+            <FormControlLabel
+                control={<Checkbox name="trust" />}
+                label="Don't ask again on this device for 30 days"
+                sx={{ "& .MuiFormControlLabel-label": { typography: "body1" } }}
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={pending}
+            >
                 {pending ? "Verifying…" : "Verify and continue"}
-            </button>
+            </Button>
 
             {available.length > 1 && (
-                <div className="auth-divider stack" style={{ gap: 4 }}>
-                    <span
-                        className="text-md strong muted"
-                        style={{ paddingBottom: 4 }}
+                <Stack
+                    sx={{
+                        gap: 0.5,
+                        pt: 2,
+                        borderTop: 1,
+                        borderColor: "border.main",
+                    }}
+                >
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontWeight: "fontWeightSemiBold", pb: 0.5 }}
                     >
                         Other ways to verify
-                    </span>
+                    </Typography>
                     {available
                         .filter((m) => m !== method)
                         .map((m) => (
-                            <button
+                            <Button
                                 key={m}
-                                type="button"
-                                className="auth-link-btn"
-                                style={{ minHeight: 44, fontSize: 15 }}
+                                variant="text"
                                 onClick={() => pick(m)}
+                                sx={(theme) => ({
+                                    minHeight: theme.layout.tapTarget,
+                                    px: 0,
+                                    justifyContent: "flex-start",
+                                    textAlign: "left",
+                                    whiteSpace: "normal",
+                                    typography: "body1",
+                                    fontWeight: "fontWeightSemiBold",
+                                })}
                             >
                                 {copy[m].other}
-                            </button>
+                            </Button>
                         ))}
-                </div>
+                </Stack>
             )}
-        </form>
+        </Stack>
     )
 }

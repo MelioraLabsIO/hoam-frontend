@@ -1,6 +1,9 @@
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import type { Metadata } from "next"
-import { PageHeader, Pill } from "@/components/ui"
-import NoticeActions from "./NoticeActions"
+import { ListRow, PageHeader, Pill, Split } from "@/components/ui"
+import NoticeActions, { DeadlineBand, PhotoPlaceholder } from "./NoticeActions"
 
 export const metadata: Metadata = { title: "Violations" }
 
@@ -39,119 +42,134 @@ export default function OwnerViolations() {
                 description="Notices for your rented home come to you, not your tenant. You can forward one to them from the notice."
             />
 
-            <div className="split">
-                <section
-                    className="card card-attention split-main"
-                    style={{ padding: 22, gap: 16 }}
-                >
-                    <div
-                        className="row-wrap"
-                        style={{ justifyContent: "space-between", gap: 8 }}
+            <Split
+                main={
+                    <Card
+                        component="section"
+                        variant="attention"
+                        sx={{ p: 2.75, gap: 2 }}
                     >
-                        <span className="text-sm strong muted">
-                            {n.home} · Notice sent {n.sent}
-                        </span>
-                        <Pill tone="amber">
-                            <span className="bold">{n.status}</span>
-                        </Pill>
-                    </div>
-                    <h2
-                        className="display"
-                        style={{ fontSize: 24, lineHeight: 1.2 }}
-                    >
-                        {n.title}
-                    </h2>
-                    <p className="lead" style={{ lineHeight: 1.5 }}>
-                        {n.body}
-                    </p>
-                    <div
-                        role="img"
-                        aria-label={`Inspection photo from ${n.sent}`}
-                        className="text-md muted"
-                        style={{
-                            height: 180,
-                            borderRadius: 12,
-                            background: "var(--gray-bg)",
-                            border: "1px dashed #b6c1cf",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        [Inspection photo from {n.sent}]
-                    </div>
-                    <div
-                        className="row-wrap"
-                        style={{
-                            justifyContent: "space-between",
-                            gap: 12,
-                            padding: 14,
-                            borderRadius: 12,
-                            background: "var(--amber-wash)",
-                        }}
-                    >
-                        <span
-                            className="strong"
-                            style={{ color: "var(--amber-fg)" }}
-                        >
-                            Resolve by {n.resolveBy} · {n.daysLeft} days left
-                        </span>
-                        <span className="text-md" style={{ color: "#5c3a10" }}>
-                            No fine if it&apos;s fixed by then
-                        </span>
-                    </div>
-                    <NoticeActions />
-                </section>
-
-                <aside className="split-side stack" style={{ gap: 16 }}>
-                    <section className="card" style={{ padding: 18, gap: 12 }}>
-                        <h2 className="h3">What happens next</h2>
-                        <ol
-                            className="stack text-md"
-                            style={{
-                                margin: 0,
-                                padding: "0 0 0 20px",
-                                gap: 8,
-                                lineHeight: 1.45,
+                        <Stack
+                            direction="row"
+                            sx={{
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 1,
                             }}
                         >
-                            {STEPS.map((s) =>
-                                s.current ? (
-                                    <li key={s.label} aria-current="step">
-                                        <strong>{s.label}</strong> — you are
-                                        here
-                                    </li>
-                                ) : (
-                                    <li key={s.label} className="muted">
-                                        {s.label}
-                                    </li>
-                                )
-                            )}
-                        </ol>
-                    </section>
-                    <section className="card" style={{ padding: 18, gap: 0 }}>
-                        <h2 className="h3" style={{ marginBottom: 4 }}>
-                            Closed
-                        </h2>
-                        {CLOSED.map((c) => (
-                            <div
-                                key={c.title}
-                                className="list-row stack"
-                                style={{
-                                    alignItems: "stretch",
-                                    gap: 2,
-                                    padding: "10px 0",
-                                }}
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ fontWeight: "fontWeightSemiBold" }}
                             >
-                                <span className="strong">{c.title}</span>
-                                <span className="text-sm muted">
-                                    {c.detail}
-                                </span>
-                            </div>
-                        ))}
-                    </section>
-                </aside>
-            </div>
+                                {n.home} · Notice sent {n.sent}
+                            </Typography>
+                            <Pill tone="amber">
+                                <Typography
+                                    variant="inherit"
+                                    component="span"
+                                    sx={{ fontWeight: "fontWeightBold" }}
+                                >
+                                    {n.status}
+                                </Typography>
+                            </Pill>
+                        </Stack>
+                        <Typography variant="h3" component="h2">
+                            {n.title}
+                        </Typography>
+                        <Typography
+                            variant="lead"
+                            component="p"
+                            color="text.secondary"
+                            sx={{ lineHeight: 1.5 }}
+                        >
+                            {n.body}
+                        </Typography>
+                        <PhotoPlaceholder sent={n.sent} />
+                        <DeadlineBand
+                            deadline={`Resolve by ${n.resolveBy} · ${n.daysLeft} days left`}
+                            note="No fine if it's fixed by then"
+                        />
+                        <NoticeActions />
+                    </Card>
+                }
+                side={
+                    <Stack component="aside" sx={{ gap: 2 }}>
+                        <Card component="section" sx={{ p: 2.25, gap: 1.5 }}>
+                            <Typography variant="h5" component="h2">
+                                What happens next
+                            </Typography>
+                            <Stack
+                                component="ol"
+                                sx={{ m: 0, p: 0, pl: 2.5, gap: 1 }}
+                            >
+                                {STEPS.map((s) =>
+                                    s.current ? (
+                                        <Typography
+                                            key={s.label}
+                                            component="li"
+                                            variant="body2"
+                                            aria-current="step"
+                                        >
+                                            <Typography
+                                                component="strong"
+                                                variant="inherit"
+                                                sx={{ fontWeight: "fontWeightBold" }}
+                                            >
+                                                {s.label}
+                                            </Typography>{" "}
+                                            — you are here
+                                        </Typography>
+                                    ) : (
+                                        <Typography
+                                            key={s.label}
+                                            component="li"
+                                            variant="body2"
+                                            color="text.secondary"
+                                        >
+                                            {s.label}
+                                        </Typography>
+                                    )
+                                )}
+                            </Stack>
+                        </Card>
+                        <Card component="section" sx={{ p: 2.25, gap: 0 }}>
+                            <Typography
+                                variant="h5"
+                                component="h2"
+                                sx={{ mb: 0.5 }}
+                            >
+                                Closed
+                            </Typography>
+                            {CLOSED.map((c) => (
+                                <ListRow
+                                    key={c.title}
+                                    sx={{
+                                        flexDirection: "column",
+                                        alignItems: "stretch",
+                                        gap: 0.25,
+                                        py: 1.25,
+                                    }}
+                                >
+                                    <Typography
+                                        component="span"
+                                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                                    >
+                                        {c.title}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
+                                        {c.detail}
+                                    </Typography>
+                                </ListRow>
+                            ))}
+                        </Card>
+                    </Stack>
+                }
+            />
         </>
     )
 }

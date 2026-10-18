@@ -1,5 +1,14 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { useState, type FormEvent } from "react"
 
 // Posting isn't wired to Supabase yet; the form confirms locally.
@@ -14,51 +23,53 @@ export default function QuickAnnouncement() {
     }
 
     return (
-        <section className="card">
-            <h2 className="h2">Quick announcement</h2>
-            <form className="stack" style={{ gap: 14 }} onSubmit={onSubmit}>
-                <div className="field">
-                    <label htmlFor="ann-title" className="label">
-                        Title
-                    </label>
-                    <input
-                        id="ann-title"
-                        name="title"
-                        className="input"
-                        placeholder="e.g. Gate codes changing Nov 4"
-                        required
-                    />
-                </div>
-                <div className="field">
-                    <label htmlFor="ann-body" className="label">
-                        Message
-                    </label>
-                    <textarea
-                        id="ann-body"
-                        name="body"
-                        className="textarea"
-                        rows={3}
-                    />
-                </div>
-                <div
-                    className="row-wrap"
-                    style={{ justifyContent: "space-between" }}
+        <Card component="section">
+            <Typography variant="h4" component="h2">
+                Quick announcement
+            </Typography>
+            <Box
+                component="form"
+                onSubmit={onSubmit}
+                sx={{ display: "flex", flexDirection: "column", gap: 1.75 }}
+            >
+                <TextField
+                    id="ann-title"
+                    name="title"
+                    label="Title"
+                    placeholder="e.g. Gate codes changing Nov 4"
+                    slotProps={{ htmlInput: { required: true } }}
+                />
+                <TextField
+                    id="ann-body"
+                    name="body"
+                    label="Message"
+                    multiline
+                    rows={3}
+                />
+                <Stack
+                    direction="row"
+                    sx={{
+                        flexWrap: "wrap",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 1.25,
+                    }}
                 >
-                    <label className="check">
-                        <input type="checkbox" name="push" defaultChecked />
-                        Send push notification to all residents
-                    </label>
-                    <button type="submit" className="btn btn-primary">
+                    <FormControlLabel
+                        control={<Checkbox name="push" defaultChecked />}
+                        label="Send push notification to all residents"
+                    />
+                    <Button type="submit" variant="contained">
                         Post
-                    </button>
-                </div>
+                    </Button>
+                </Stack>
                 {posted && (
-                    <p className="callout callout-info" role="status">
+                    <Alert severity="info" role="status">
                         “{posted}” is ready to post once announcements are
                         connected.
-                    </p>
+                    </Alert>
                 )}
-            </form>
-        </section>
+            </Box>
+        </Card>
     )
 }

@@ -1,5 +1,6 @@
+import Button from "@mui/material/Button"
+import Link from "@mui/material/Link"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { AuthHeader, AuthLayout } from "@/components/auth/AuthLayout"
 import { isDemoMode } from "@/lib/auth/config"
 import { getCurrentUser } from "@/lib/auth/session"
@@ -23,9 +24,9 @@ export default async function ResetPage() {
                     Reset links work once and expire after 30 minutes. Request a
                     new one to choose your password.
                 </AuthHeader>
-                <Link href="/auth/forgot" className="auth-btn">
+                <Button href="/auth/forgot" variant="contained" size="large">
                     Request a new link
-                </Link>
+                </Button>
             </AuthLayout>
         )
     }

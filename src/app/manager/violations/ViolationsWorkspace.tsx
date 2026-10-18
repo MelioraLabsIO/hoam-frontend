@@ -1,10 +1,20 @@
 "use client"
 
+import Alert from "@mui/material/Alert"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import ListItemButton from "@mui/material/ListItemButton"
+import Stack from "@mui/material/Stack"
+import type { Theme } from "@mui/material/styles"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
 import { Pill } from "@/components/ui"
 
 const STAGES = ["Courtesy notice", "Second notice", "Fine issued", "Hearing"]
 const TODAY = "Oct 17"
+
+const actionSx = (theme: Theme) => ({ flex: `1 1 ${theme.spacing(17.5)}` })
 
 type Violation = {
     id: string
@@ -90,104 +100,142 @@ export default function ViolationsWorkspace() {
     }
 
     return (
-        <div className="split">
-            <section
-                className="card split-main"
+        <Box
+            sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                alignItems: "flex-start",
+            }}
+        >
+            <Card
+                component="section"
                 aria-label="Open violations"
-                style={{ padding: 8, gap: 0 }}
+                sx={(theme) => ({
+                    flex: `999 1 ${theme.layout.split.main}px`,
+                    p: 1,
+                    gap: 0,
+                })}
             >
                 {items.map((v) => {
                     const on = v.id === sel.id
                     return (
-                        <button
+                        <ListItemButton
                             key={v.id}
+                            component="button"
                             type="button"
                             aria-pressed={on}
+                            selected={on}
                             onClick={() => setSelId(v.id)}
-                            className="row"
-                            style={{
+                            sx={(theme) => ({
                                 width: "100%",
                                 textAlign: "left",
-                                border: "none",
-                                borderRadius: 12,
-                                background: on
-                                    ? "var(--surface-sunken)"
-                                    : "var(--surface)",
-                                padding: 14,
-                                gap: 14,
-                                color: "var(--ink)",
-                                cursor: "pointer",
                                 flexWrap: "wrap",
-                            }}
+                                gap: 1.75,
+                                p: 1.75,
+                                borderRadius: `${theme.radius.md}px`,
+                                color: "text.primary",
+                                bgcolor: "background.paper",
+                                "&.Mui-selected, &.Mui-selected:hover": {
+                                    bgcolor: "background.sunken",
+                                },
+                            })}
                         >
-                            <span
-                                className="stack grow"
-                                style={{ gap: 3, flexBasis: 200 }}
+                            <Stack
+                                component="span"
+                                sx={(theme) => ({
+                                    flex: `1 1 ${theme.spacing(25)}`,
+                                    minWidth: 0,
+                                    gap: 0.375,
+                                })}
                             >
-                                <span
-                                    className="strong"
-                                    style={{ fontSize: 15 }}
+                                <Typography
+                                    component="span"
+                                    sx={{ fontWeight: "fontWeightSemiBold" }}
                                 >
                                     {v.title}
-                                </span>
-                                <span className="text-sm muted">
+                                </Typography>
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                >
                                     {v.home} · {v.rule}
-                                </span>
-                            </span>
+                                </Typography>
+                            </Stack>
                             <Pill tone={v.resolved ? "blue" : "gray"}>
                                 {v.resolved ? "Resolved" : STAGES[v.stageIdx]}
                             </Pill>
-                            <span
-                                className="text-sm strong"
-                                style={{
-                                    width: 110,
+                            <Typography
+                                variant="caption"
+                                color={
+                                    v.late && !v.resolved
+                                        ? "amber.dark"
+                                        : "text.secondary"
+                                }
+                                sx={(theme) => ({
+                                    width: theme.spacing(13.75),
                                     textAlign: "right",
-                                    color:
-                                        v.late && !v.resolved
-                                            ? "var(--amber-fg)"
-                                            : "var(--muted)",
-                                }}
+                                    fontWeight: "fontWeightSemiBold",
+                                })}
                             >
                                 {v.resolved ? `Closed ${TODAY}` : v.due}
-                            </span>
-                        </button>
+                            </Typography>
+                        </ListItemButton>
                     )
                 })}
-            </section>
+            </Card>
 
-            <section
-                className="card split-side"
+            <Card
+                component="section"
                 aria-label="Violation detail"
                 aria-live="polite"
-                style={{ padding: 22, gap: 18, flexBasis: 340 }}
+                sx={(theme) => ({
+                    flex: `1 1 ${theme.spacing(42.5)}`,
+                    p: 2.75,
+                    gap: 2.25,
+                })}
             >
-                <div className="stack" style={{ gap: 6 }}>
-                    <span className="text-sm strong muted">
+                <Stack sx={{ gap: 0.75 }}>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontWeight: "fontWeightSemiBold" }}
+                    >
                         {sel.home} · {sel.owner}
-                    </span>
-                    <h2 className="h2-lg" style={{ lineHeight: 1.2 }}>
+                    </Typography>
+                    <Typography
+                        variant="h3"
+                        component="h2"
+                        sx={{ lineHeight: 1.2 }}
+                    >
                         {sel.title}
-                    </h2>
-                    <span className="text-md muted">{sel.rule}</span>
-                </div>
-                <div
-                    className="text-md muted"
-                    style={{
-                        height: 150,
-                        borderRadius: 12,
-                        background: "var(--gray-bg)",
-                        border: "1px dashed #b6c1cf",
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {sel.rule}
+                    </Typography>
+                </Stack>
+                <Box
+                    sx={(theme) => ({
+                        height: theme.spacing(18.75),
+                        borderRadius: `${theme.radius.md}px`,
+                        bgcolor: "neutral.soft",
+                        border: 1,
+                        borderStyle: "dashed",
+                        borderColor: "border.dashed",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                    }}
+                    })}
                 >
-                    [Inspection photo]
-                </div>
-                <ol
-                    style={{
-                        margin: 0,
-                        padding: 0,
+                    <Typography variant="body2" color="text.secondary">
+                        [Inspection photo]
+                    </Typography>
+                </Box>
+                <Box
+                    component="ol"
+                    sx={{
+                        m: 0,
+                        p: 0,
                         listStyle: "none",
                         display: "flex",
                         flexDirection: "column",
@@ -197,97 +245,101 @@ export default function ViolationsWorkspace() {
                         const done = i <= sel.stageIdx
                         const current = i === sel.stageIdx
                         return (
-                            <li
+                            <Box
+                                component="li"
                                 key={label}
-                                style={{
-                                    display: "flex",
-                                    gap: 12,
-                                    alignItems: "flex-start",
-                                    minHeight: 44,
-                                }}
                                 aria-current={current ? "step" : undefined}
+                                sx={(theme) => ({
+                                    display: "flex",
+                                    gap: 1.5,
+                                    alignItems: "flex-start",
+                                    minHeight: theme.layout.tapTarget,
+                                })}
                             >
-                                <div
-                                    style={{
+                                <Box
+                                    aria-hidden="true"
+                                    sx={{
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
                                         alignSelf: "stretch",
                                     }}
-                                    aria-hidden="true"
                                 >
-                                    <span
-                                        style={{
-                                            width: 14,
-                                            height: 14,
-                                            borderRadius: 7,
-                                            border: `2px solid ${done ? "var(--primary)" : "#b6c1cf"}`,
-                                            background: done
-                                                ? "var(--primary)"
-                                                : "var(--surface)",
-                                            marginTop: 3,
-                                        }}
+                                    <Box
+                                        component="span"
+                                        sx={(theme) => ({
+                                            width: theme.spacing(1.75),
+                                            height: theme.spacing(1.75),
+                                            borderRadius: `${theme.radius.pill}px`,
+                                            border: 2,
+                                            borderColor: done
+                                                ? "primary.main"
+                                                : "border.dashed",
+                                            bgcolor: done
+                                                ? "primary.main"
+                                                : "background.paper",
+                                            mt: 0.375,
+                                        })}
                                     />
-                                    <span
-                                        style={{
+                                    <Box
+                                        component="span"
+                                        sx={(theme) => ({
                                             flex: 1,
-                                            width: 2,
-                                            background: "var(--border)",
-                                        }}
+                                            width: theme.spacing(0.25),
+                                            bgcolor: "border.main",
+                                        })}
                                     />
-                                </div>
-                                <div
-                                    className="stack"
-                                    style={{ gap: 2, paddingBottom: 10 }}
-                                >
-                                    <span
-                                        className="text-md"
-                                        style={{
-                                            fontWeight: current ? 700 : 500,
-                                            color: done
-                                                ? "var(--ink)"
-                                                : "var(--muted)",
+                                </Box>
+                                <Stack sx={{ gap: 0.25, pb: 1.25 }}>
+                                    <Typography
+                                        variant="body2"
+                                        color={
+                                            done
+                                                ? "text.primary"
+                                                : "text.secondary"
+                                        }
+                                        sx={{
+                                            fontWeight: current
+                                                ? "fontWeightBold"
+                                                : "fontWeightMedium",
                                         }}
                                     >
                                         {label}
-                                    </span>
-                                    <span className="text-sm muted">
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                    >
                                         {done
                                             ? `Sent ${sel.dates[i]}`
                                             : "Not yet"}
-                                    </span>
-                                </div>
-                            </li>
+                                    </Typography>
+                                </Stack>
+                            </Box>
                         )
                     })}
-                </ol>
+                </Box>
                 {sel.resolved && (
-                    <p className="callout callout-info" role="status">
+                    <Alert severity="info" role="status">
                         Marked resolved {TODAY}.
-                    </p>
+                    </Alert>
                 )}
-                <div className="row-wrap" style={{ gap: 10 }}>
-                    <button
-                        type="button"
-                        className="btn btn-primary btn-flex"
-                        style={{
-                            flexBasis: 140,
-                            opacity: sel.resolved ? 0.5 : 1,
-                        }}
+                <Stack
+                    direction="row"
+                    sx={{ flexWrap: "wrap", alignItems: "center", gap: 1.25 }}
+                >
+                    <Button
+                        variant="contained"
+                        sx={actionSx}
                         disabled={sel.resolved}
                         onClick={() =>
                             update((v) => ({ ...v, resolved: true }))
                         }
                     >
                         Mark resolved
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-flex"
-                        style={{
-                            flexBasis: 140,
-                            opacity: sel.resolved || atLastStage ? 0.5 : 1,
-                        }}
+                    </Button>
+                    <Button
+                        sx={actionSx}
                         disabled={sel.resolved || atLastStage}
                         onClick={() =>
                             update((v) => ({
@@ -298,9 +350,9 @@ export default function ViolationsWorkspace() {
                         }
                     >
                         Send next notice
-                    </button>
-                </div>
-            </section>
-        </div>
+                    </Button>
+                </Stack>
+            </Card>
+        </Box>
     )
 }

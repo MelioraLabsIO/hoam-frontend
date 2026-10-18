@@ -1,5 +1,12 @@
 "use client"
 
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import Stack from "@mui/material/Stack"
+import type { Theme } from "@mui/material/styles"
+import ToggleButton from "@mui/material/ToggleButton"
+import Typography from "@mui/material/Typography"
 import { useState } from "react"
 import { PageHeader, Pill } from "@/components/ui"
 
@@ -95,6 +102,18 @@ const FILTERS: { id: "all" | Kind; label: string }[] = [
     { id: "Architectural", label: "Architectural" },
 ]
 
+/** White bordered pill that turns dark when pressed. */
+const filterChipSx = (theme: Theme) => ({
+    minHeight: theme.layout.tapTarget,
+    borderRadius: `${theme.radius.pill}px`,
+    border: 1,
+    borderColor: "border.input",
+    bgcolor: "background.paper",
+    color: "text.primary",
+    "&:hover": { bgcolor: "background.paper", borderColor: "border.strong" },
+    "&.Mui-selected, &.Mui-selected:hover": { borderColor: "nav.main" },
+})
+
 export default function RequestsBoard() {
     const [kind, setKind] = useState<"all" | Kind>("all")
     const visible = REQUESTS.filter((r) => kind === "all" || r.kind === kind)
@@ -106,104 +125,102 @@ export default function RequestsBoard() {
                 title="Requests"
                 actions={
                     <>
-                        <div
+                        <Stack
+                            direction="row"
                             role="group"
                             aria-label="Request type"
-                            className="row-wrap"
-                            style={{ gap: 8 }}
+                            sx={{
+                                flexWrap: "wrap",
+                                alignItems: "center",
+                                gap: 1,
+                            }}
                         >
-                            {FILTERS.map((f) => {
-                                const on = f.id === kind
-                                return (
-                                    <button
-                                        key={f.id}
-                                        type="button"
-                                        className="btn"
-                                        aria-pressed={on}
-                                        onClick={() => setKind(f.id)}
-                                        style={{
-                                            borderRadius: 22,
-                                            padding: "0 14px",
-                                            fontSize: 14,
-                                            ...(on
-                                                ? {
-                                                      background:
-                                                          "var(--nav-bg)",
-                                                      borderColor:
-                                                          "var(--nav-bg)",
-                                                      color: "#fff",
-                                                  }
-                                                : null),
-                                        }}
-                                    >
-                                        {f.label}
-                                    </button>
-                                )
-                            })}
-                        </div>
-                        <button type="button" className="btn btn-primary">
-                            Log request
-                        </button>
+                            {FILTERS.map((f) => (
+                                <ToggleButton
+                                    key={f.id}
+                                    value={f.id}
+                                    color="nav"
+                                    selected={f.id === kind}
+                                    onChange={() => setKind(f.id)}
+                                    sx={filterChipSx}
+                                >
+                                    {f.label}
+                                </ToggleButton>
+                            ))}
+                        </Stack>
+                        <Button variant="contained">Log request</Button>
                     </>
                 }
             />
 
-            <div className="table-wrap" style={{ paddingBottom: 8 }}>
-                <div
-                    style={{
+            <Box sx={{ position: "relative", overflowX: "auto", pb: 1 }}>
+                <Box
+                    sx={(theme) => ({
                         display: "grid",
-                        gridTemplateColumns: "repeat(5, minmax(240px, 1fr))",
-                        gap: 14,
+                        gridTemplateColumns: `repeat(5, minmax(${theme.spacing(30)}, 1fr))`,
+                        gap: 1.75,
                         alignItems: "start",
-                    }}
+                    })}
                 >
                     {COLUMNS.map((col) => {
                         const cards = visible.filter((r) => r.col === col.id)
                         return (
-                            <section
+                            <Stack
+                                component="section"
                                 key={col.id}
                                 aria-label={col.title}
-                                className="stack"
-                                style={{
-                                    background: "var(--track)",
-                                    borderRadius: 16,
-                                    padding: 12,
-                                    gap: 10,
-                                    minHeight: 420,
-                                }}
+                                sx={(theme) => ({
+                                    bgcolor: "track",
+                                    borderRadius: `${theme.radius.xl}px`,
+                                    p: 1.5,
+                                    gap: 1.25,
+                                    minHeight: theme.spacing(52.5),
+                                })}
                             >
-                                <div
-                                    className="spread"
-                                    style={{
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        flexWrap: "wrap",
                                         alignItems: "center",
-                                        padding: "4px 4px 2px",
+                                        justifyContent: "space-between",
+                                        gap: 1.5,
+                                        pt: 0.5,
+                                        px: 0.5,
+                                        pb: 0.25,
                                     }}
                                 >
-                                    <h2
-                                        className="bold"
-                                        style={{ fontSize: 15 }}
+                                    <Typography
+                                        component="h2"
+                                        sx={{ fontWeight: "fontWeightBold" }}
                                     >
                                         {col.title}
-                                    </h2>
-                                    <span className="text-sm bold muted">
-                                        {cards.length}
-                                    </span>
-                                </div>
-                                {cards.map((c) => (
-                                    <article
-                                        key={c.id}
-                                        className="card"
-                                        style={{
-                                            padding: 12,
-                                            gap: 8,
-                                            borderRadius: 12,
-                                        }}
+                                    </Typography>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ fontWeight: "fontWeightBold" }}
                                     >
-                                        <div
-                                            className="spread"
-                                            style={{
+                                        {cards.length}
+                                    </Typography>
+                                </Stack>
+                                {cards.map((c) => (
+                                    <Card
+                                        component="article"
+                                        key={c.id}
+                                        sx={(theme) => ({
+                                            p: 1.5,
+                                            gap: 1,
+                                            borderRadius: `${theme.radius.md}px`,
+                                        })}
+                                    >
+                                        <Stack
+                                            direction="row"
+                                            sx={{
+                                                flexWrap: "wrap",
                                                 alignItems: "center",
-                                                gap: 8,
+                                                justifyContent:
+                                                    "space-between",
+                                                gap: 1,
                                             }}
                                         >
                                             <Pill
@@ -215,37 +232,57 @@ export default function RequestsBoard() {
                                             >
                                                 {c.kind}
                                             </Pill>
-                                            <span
-                                                className="muted"
-                                                style={{ fontSize: 12 }}
+                                            <Typography
+                                                variant="micro"
+                                                color="text.secondary"
+                                                sx={{
+                                                    fontWeight:
+                                                        "fontWeightRegular",
+                                                }}
                                             >
                                                 {c.id}
-                                            </span>
-                                        </div>
-                                        <h3
-                                            className="strong"
-                                            style={{
-                                                fontSize: 15,
+                                            </Typography>
+                                        </Stack>
+                                        <Typography
+                                            component="h3"
+                                            sx={{
+                                                fontWeight:
+                                                    "fontWeightSemiBold",
                                                 lineHeight: 1.3,
-                                                margin: 0,
                                             }}
                                         >
                                             {c.title}
-                                        </h3>
-                                        <div
-                                            className="spread text-sm muted"
-                                            style={{ gap: 8 }}
+                                        </Typography>
+                                        <Stack
+                                            direction="row"
+                                            sx={{
+                                                flexWrap: "wrap",
+                                                alignItems: "baseline",
+                                                justifyContent:
+                                                    "space-between",
+                                                gap: 1,
+                                            }}
                                         >
-                                            <span>{c.home}</span>
-                                            <span>{c.age}</span>
-                                        </div>
-                                    </article>
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
+                                                {c.home}
+                                            </Typography>
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary"
+                                            >
+                                                {c.age}
+                                            </Typography>
+                                        </Stack>
+                                    </Card>
                                 ))}
-                            </section>
+                            </Stack>
                         )
                     })}
-                </div>
-            </div>
+                </Box>
+            </Box>
         </>
     )
 }

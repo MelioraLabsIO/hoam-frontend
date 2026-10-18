@@ -1,6 +1,11 @@
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Link from "@mui/material/Link"
+import Stack from "@mui/material/Stack"
+import Typography from "@mui/material/Typography"
 import type { Metadata } from "next"
-import { PageHeader, Pill } from "@/components/ui"
-import TenantAccess from "./TenantAccess"
+import { ListRow, PageHeader, Pill } from "@/components/ui"
+import TenantAccess, { HomeCard, HomeHeader } from "./TenantAccess"
 
 export const metadata: Metadata = { title: "My homes & tenants" }
 
@@ -15,61 +20,62 @@ export default function OwnerHomes() {
         <>
             <PageHeader
                 title="My homes & tenants"
-                actions={
-                    <button type="button" className="btn btn-primary">
-                        Invite a tenant
-                    </button>
-                }
+                actions={<Button variant="contained">Invite a tenant</Button>}
             />
 
-            <div className="split">
-                <section
-                    className="card"
-                    style={{ flex: "1 1 380px", padding: 22, gap: 16 }}
-                >
-                    <div
-                        className="row-wrap"
-                        style={{
-                            justifyContent: "space-between",
-                            alignItems: "flex-start",
-                            gap: 8,
-                        }}
-                    >
-                        <div className="stack" style={{ gap: 4 }}>
-                            <h2 className="h2-lg">14 Willow Bend Ct</h2>
-                            <span className="text-md muted">
-                                Lot 31 · single-family
-                            </span>
-                        </div>
-                        <Pill tone="blue">
-                            <span className="bold">You live here</span>
-                        </Pill>
-                    </div>
-                    <div className="stack" style={{ gap: 4 }}>
-                        <h3 className="text-md strong">Household</h3>
-                        <div>
-                            {HOUSEHOLD.map((m) => (
-                                <div
-                                    key={m.name}
-                                    className="list-row"
-                                    style={{
-                                        justifyContent: "space-between",
-                                        padding: "10px 0",
-                                    }}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 2,
+                    alignItems: "flex-start",
+                }}
+            >
+                <HomeCard>
+                    <HomeHeader
+                        address="14 Willow Bend Ct"
+                        detail="Lot 31 · single-family"
+                        pill={
+                            <Pill tone="blue">
+                                <Typography
+                                    variant="inherit"
+                                    component="span"
+                                    sx={{ fontWeight: "fontWeightBold" }}
                                 >
-                                    <span>{m.name}</span>
-                                    <span className="muted">{m.role}</span>
-                                </div>
+                                    You live here
+                                </Typography>
+                            </Pill>
+                        }
+                    />
+                    <Stack sx={{ gap: 0.5 }}>
+                        <Typography
+                            variant="body2"
+                            component="h3"
+                            sx={{ fontWeight: "fontWeightSemiBold" }}
+                        >
+                            Household
+                        </Typography>
+                        <Box>
+                            {HOUSEHOLD.map((m) => (
+                                <ListRow
+                                    key={m.name}
+                                    sx={{ justifyContent: "space-between", py: 1.25 }}
+                                >
+                                    <Typography component="span">{m.name}</Typography>
+                                    <Typography component="span" color="text.secondary">
+                                        {m.role}
+                                    </Typography>
+                                </ListRow>
                             ))}
-                        </div>
-                    </div>
-                    <a href="#" className="link-strong">
+                        </Box>
+                    </Stack>
+                    <Link href="#" variant="label">
                         Add a household member
-                    </a>
-                </section>
+                    </Link>
+                </HomeCard>
 
                 <TenantAccess />
-            </div>
+            </Box>
         </>
     )
 }

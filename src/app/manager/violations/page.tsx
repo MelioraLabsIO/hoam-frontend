@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Button from "@mui/material/Button"
 import { PageHeader } from "@/components/ui"
 import ViolationsWorkspace from "./ViolationsWorkspace"
 
@@ -11,9 +12,7 @@ export default function ManagerViolations() {
                 eyebrow="5 open · 2 past their resolve-by date"
                 title="Violations"
                 actions={
-                    <button type="button" className="btn btn-primary">
-                        Log violation
-                    </button>
+                    <Button variant="contained">Log violation</Button>
                 }
             />
             <ViolationsWorkspace />
