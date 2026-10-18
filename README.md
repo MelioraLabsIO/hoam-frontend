@@ -55,7 +55,7 @@ Not wired yet: the "Don't ask again on this device for 30 days" checkbox, and th
 ## Getting started
 
 ```bash
-cp .env.example .env.local   # add your Supabase URL and anon key
+cp .env.example .env.local   # leave empty for demo mode, or add your Supabase URL and anon key
 npm install
 npm run dev
 ```

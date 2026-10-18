@@ -9,7 +9,18 @@
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
 
-export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY)
+/** True only for real-looking values, so the placeholders from .env.example keep demo mode on. */
+function looksReal(url: string, key: string) {
+    if (!url || !key || /your-project|your-anon-key/i.test(url + key))
+        return false
+    try {
+        return new URL(url).protocol.startsWith("http")
+    } catch {
+        return false
+    }
+}
+
+export const isSupabaseConfigured = looksReal(SUPABASE_URL, SUPABASE_ANON_KEY)
 export const isDemoMode = !isSupabaseConfigured
 
 export type Role = "manager" | "owner" | "tenant"

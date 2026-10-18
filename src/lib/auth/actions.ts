@@ -84,6 +84,14 @@ export async function signIn(
             email,
             password,
         })
+        if (
+            error?.name === "AuthRetryableFetchError" ||
+            (error && !error.status)
+        ) {
+            return {
+                error: "We couldn't reach the sign-in service. Check the Supabase URL and key, then try again.",
+            }
+        }
         if (error || !data.user)
             return {
                 error: "That email and password don't match. Check them and try again.",
