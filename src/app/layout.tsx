@@ -1,46 +1,37 @@
-"use client"
+import type { Metadata } from "next"
+import type { ReactNode } from "react"
+import { Bricolage_Grotesque, Figtree } from "next/font/google"
+import "./globals.css"
 
-import * as React from "react"
-import { ReactNode } from "react"
-
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
-import { Roboto } from "next/font/google"
-import { ThemeProvider } from "@mui/material/styles"
-import { CssBaseline } from "@mui/material"
-import { theme } from "@/app/theme"
-import Sidebar from "@/components/ui/Sidebar/Sidebar"
-import { usePathname } from "next/navigation"
-
-const roboto = Roboto({
-    weight: ["300", "400", "500", "700"],
+const bricolage = Bricolage_Grotesque({
     subsets: ["latin"],
+    weight: ["500", "700"],
     display: "swap",
-    variable: "--font-roboto",
+    variable: "--font-bricolage",
 })
 
-export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
-    const { children } = props
-    const pathname = usePathname()
+const figtree = Figtree({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    display: "swap",
+    variable: "--font-figtree",
+})
 
-    // Hide sidebar on the landing page (home)
-    const isHomePage = pathname === "/"
+export const metadata: Metadata = {
+    title: {
+        default: "HOAM · Homeowner Association Management",
+        template: "%s · HOAM",
+    },
+    description:
+        "Run your homeowner association: dues, requests, violations, amenities and announcements.",
+}
 
+export default function RootLayout({
+    children,
+}: Readonly<{ children: ReactNode }>) {
     return (
-        <html lang="en" className={roboto.variable}>
-        <body className={roboto.variable}>
-        <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                {isHomePage ? (
-                    <main>{children}</main>
-                ) : (
-                    <Sidebar>
-                        {children}
-                    </Sidebar>
-                )}
-            </ThemeProvider>
-        </AppRouterCacheProvider>
-        </body>
+        <html lang="en" className={`${bricolage.variable} ${figtree.variable}`}>
+            <body>{children}</body>
         </html>
     )
 }

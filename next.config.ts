@@ -1,21 +1,17 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-    turbopack: {},
-    webpack(config) {
-        config.module.rules.push({
-            test: /\.svg$/,
-            use: ["@svgr/webpack"],
-        })
-        return config
-    },
     async redirects() {
         return [
+            { source: "/login", destination: "/auth/login", permanent: true },
+            // Old placeholder routes now live in the HOA Manager portal.
+            { source: "/dashboard", destination: "/manager", permanent: false },
             {
-                source: "/login",
-                destination: "/auth/login",
-                permanent: true,
+                source: "/houses",
+                destination: "/manager/residents",
+                permanent: false,
             },
+            { source: "/settings", destination: "/manager", permanent: false },
         ]
     },
 }
